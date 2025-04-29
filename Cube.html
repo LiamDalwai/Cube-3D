@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reflective Burgundy Cube</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #111; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <div id="cube-container"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script>
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x111111);
+
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+    camera.position.set(5, 5, 5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(300, 300);
+    document.getElementById("cube-container").appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.1;
+    controls.rotateSpeed = 0.5;
+    controls.enableZoom = false;
+
+    // Reflective chrome material with burgundy tint
+    const cubeMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x49243e,
+      metalness: 1,
+      roughness: 0,
+      clearcoat: 1,
+      reflectivity: 1,
+      transmission: 0.6,
+      ior: 1.5,
+    });
+
+    const group = new THREE.Group();
+    const cubeSize = 0.95;
+    const offset = 1.01;
+
+    for (let x = -1; x <= 1; x++) {
+      for (let y = -1; y <= 1; y++) {
+        for (let z = -1; z <= 1; z++) {
+          const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+          geometry = geometry.toNonIndexed(); // Needed for rounded edges
+          const cube = new THREE.Mesh(geometry, cubeMaterial);
+          cube.position.set(x * offset, y * offset, z * offset);
+          group.add(cube);
+        }
+      }
+    }
+
+    scene.add(group);
+
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(10, 10, 10);
+    scene.add(light);
+
+    const animate = () => {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    };
+
+    animate();
+  </script>
+</body>
+</html>
