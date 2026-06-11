@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#14101f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Card Wardens — Demo</title>
 <style>
   :root {
@@ -18,17 +22,18 @@
     --uncommon: #5fa8e8;
     --rare: #e8c468;
   }
-  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
   body {
     background: radial-gradient(ellipse at 50% 0%, #2a2045 0%, var(--bg-dark) 70%);
     color: #f0e9d8;
     font-family: Georgia, 'Times New Roman', serif;
     overflow: hidden;
+    touch-action: manipulation;
   }
 
   /* ---------- screens ---------- */
-  .screen { display: none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
+  .screen { display: none; height: 100vh; height: 100dvh; flex-direction: column; align-items: center; justify-content: center; padding: 16px; overflow-y: auto; }
   .screen.active { display: flex; }
 
   h1.game-title {
@@ -53,7 +58,10 @@
     box-shadow: 0 4px 14px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.5);
     transition: transform .12s, box-shadow .12s;
   }
-  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(232,196,104,.35); }
+  @media (hover: hover) {
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(232,196,104,.35); }
+  }
+  .btn:active { transform: translateY(1px); }
   .btn:disabled { opacity: .4; cursor: default; transform: none; }
   .btn.secondary {
     background: linear-gradient(180deg, #3b2f5e, #261d40);
@@ -68,7 +76,10 @@
     border: 2px solid #4a3d75; border-radius: 16px; padding: 20px 16px;
     text-align: center; cursor: pointer; transition: transform .15s, border-color .15s, box-shadow .15s;
   }
-  .hero-card:hover { transform: translateY(-6px); border-color: var(--gold); box-shadow: 0 12px 30px rgba(232,196,104,.25); }
+  @media (hover: hover) {
+    .hero-card:hover { transform: translateY(-6px); border-color: var(--gold); box-shadow: 0 12px 30px rgba(232,196,104,.25); }
+  }
+  .hero-card:active { border-color: var(--gold); }
   .hero-card .portrait { font-size: 64px; line-height: 1.2; filter: drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
   .hero-card h3 { color: var(--gold); margin: 8px 0 2px; font-size: 21px; }
   .hero-card .hero-title { color: #b9aed6; font-size: 13px; font-style: italic; }
@@ -112,7 +123,9 @@
     border-radius: 14px; border: 2px solid transparent; transition: border-color .15s, transform .1s; min-width: 130px;
   }
   .enemy.targetable { border-color: var(--gold); cursor: pointer; animation: pulse 1.4s infinite; }
-  .enemy.targetable:hover { transform: scale(1.06); }
+  @media (hover: hover) {
+    .enemy.targetable:hover { transform: scale(1.06); }
+  }
   .enemy .sprite { font-size: 64px; filter: drop-shadow(0 6px 12px rgba(0,0,0,.7)); transition: transform .1s; }
   .enemy.boss .sprite { font-size: 92px; }
   .enemy.hit .sprite { animation: shake .35s; }
@@ -155,9 +168,13 @@
   }
   .card.uncommon { border-color: var(--uncommon); }
   .card.rare { border-color: var(--rare); box-shadow: 0 6px 18px rgba(232,196,104,.3); }
-  .card:hover { transform: translateY(-26px) scale(1.07); z-index: 5; box-shadow: 0 14px 30px rgba(0,0,0,.7); }
+  @media (hover: hover) {
+    .card:hover { transform: translateY(-26px) scale(1.07); z-index: 5; box-shadow: 0 14px 30px rgba(0,0,0,.7); }
+    .card.unplayable:hover { transform: none; }
+    .card.mini:hover { transform: none; }
+    .reward-cards .card:hover { transform: translateY(-14px) scale(1.08); }
+  }
   .card.unplayable { filter: grayscale(.7) brightness(.65); cursor: default; }
-  .card.unplayable:hover { transform: none; }
   .card.selected { transform: translateY(-30px) scale(1.1); border-color: #fff; z-index: 6; }
   .card .cost {
     position: absolute; top: -10px; left: -10px; width: 32px; height: 32px; border-radius: 50%;
@@ -170,7 +187,6 @@
   .card .ctype { font-size: 9px; letter-spacing: 2px; color: #8d80b5; font-family: sans-serif; margin: 3px 0; text-transform: uppercase; }
   .card .ctext { font-size: 11px; color: #ded5f0; line-height: 1.3; font-family: sans-serif; padding: 0 2px; }
   .card.mini { width: 108px; height: 154px; cursor: default; }
-  .card.mini:hover { transform: none; }
   .card.mini .art { font-size: 32px; }
   .card.mini .cname { font-size: 11px; }
   .card.mini .ctext { font-size: 9.5px; }
@@ -201,7 +217,6 @@
   .reward-panel .rsub { color: #b9aed6; margin: 8px 0 26px; font-style: italic; }
   .reward-cards { display: flex; gap: 20px; justify-content: center; margin-bottom: 28px; flex-wrap: wrap; }
   .reward-cards .card { cursor: pointer; }
-  .reward-cards .card:hover { transform: translateY(-14px) scale(1.08); }
   .end-emoji { font-size: 90px; margin-bottom: 10px; }
 
   /* deck modal */
@@ -211,11 +226,49 @@
   .modal h3 { color: var(--gold); margin-bottom: 16px; letter-spacing: 2px; }
   .deck-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 18px; }
 
+  /* ---------- mobile layout ---------- */
   @media (max-width: 760px) {
-    .card { width: 104px; height: 152px; } .card .art { font-size: 30px; }
-    .card .cname { font-size: 11px; } .card .ctext { font-size: 9px; }
-    .enemy .sprite { font-size: 46px; } .enemy.boss .sprite { font-size: 66px; }
-    .hand { min-height: 165px; }
+    #screen-battle { overflow-y: hidden; }
+    .battle-top { padding: 8px 12px; font-size: 12px; padding-top: max(8px, env(safe-area-inset-top)); }
+    .battle-top .bname { font-size: 14px; }
+    .pile-info span { margin-left: 8px; }
+
+    .enemy-row { gap: 6px; padding: 4px 6px 0; flex-wrap: wrap; align-items: flex-end; }
+    .enemy { min-width: 96px; padding: 4px 6px; }
+    .enemy .sprite { font-size: 44px; } .enemy.boss .sprite { font-size: 64px; }
+    .enemy .ename { font-size: 11px; }
+    .hpbar { width: 92px; }
+
+    .player-row { padding: 4px 10px; gap: 8px; }
+    .hero-panel { gap: 8px; padding: 4px 6px; }
+    .hero-panel .sprite { font-size: 42px; }
+    .hero-panel .hpbar { width: 110px !important; }
+    .energy-orb { width: 54px; height: 54px; font-size: 19px; }
+    #end-turn-btn { padding: 12px 16px; font-size: 14px; letter-spacing: 1px; }
+
+    /* hand scrolls horizontally; cards stay finger-sized */
+    .hand {
+      min-height: 196px; padding: 34px 8px calc(10px + env(safe-area-inset-bottom));
+      overflow-x: auto; overflow-y: hidden; justify-content: flex-start;
+      -webkit-overflow-scrolling: touch; scrollbar-width: thin;
+    }
+    .card { width: 116px; height: 162px; flex-shrink: 0; }
+    .card:first-child { margin-left: auto; }
+    .card:last-child { margin-right: auto; }
+    .card .art { font-size: 34px; margin-top: 5px; }
+    .card .cname { font-size: 12px; } .card .ctext { font-size: 10px; }
+    .card.selected { transform: translateY(-22px) scale(1.06); }
+
+    h1.game-title { letter-spacing: 3px; }
+    .map-panel { padding: 20px 14px; }
+    .map-node { width: 60px; height: 60px; font-size: 20px; }
+    .node-link { width: 14px; }
+    .btn { padding: 12px 26px; font-size: 17px; }
+    .hero-card { width: min(86vw, 300px); }
+    .hero-card p.desc { min-height: 0; }
+    .center-msg { font-size: 14px; min-height: 22px; }
+    .turn-banner { font-size: 30px; letter-spacing: 3px; }
+    .float-text { font-size: 21px; }
   }
 </style>
 </head>
@@ -534,7 +587,12 @@ const shuffle = arr => { const a = [...arr]; for (let i = a.length - 1; i > 0; i
 let run = null;     // persistent across battles: hero, hp, deck, progress
 let bt = null;      // current battle state
 let busy = false;   // input locked during animations / enemy turn
-let pendingCard = null; // card waiting for a target click
+let pendingCard = null; // selected card: { handIdx, needsTarget }
+
+// touch screens get tap-to-select, tap-again-to-play (no hover preview there)
+const IS_TOUCH = window.matchMedia
+  ? window.matchMedia("(hover: none)").matches
+  : "ontouchstart" in window;
 
 /* ---------- screen handling ---------- */
 function showScreen(id) {
@@ -746,7 +804,7 @@ function renderBattle() {
     if (en.hp <= 0) {
       el.innerHTML = `<div class="sprite" style="filter:grayscale(1);opacity:.35;">💀</div><div class="ename" style="opacity:.4;">${en.name}</div>`;
     } else {
-      const needsTarget = pendingCard !== null;
+      const needsTarget = pendingCard !== null && pendingCard.needsTarget;
       if (needsTarget) el.classList.add("targetable");
       el.innerHTML = `
         <div class="intent">${describeIntent(en)}</div>
@@ -789,7 +847,9 @@ function renderBattle() {
     hand.appendChild(el);
   });
 
-  $("center-msg").textContent = pendingCard ? "Choose a target..." : "";
+  $("center-msg").textContent = !pendingCard ? ""
+    : pendingCard.needsTarget ? "Tap an enemy to target..."
+    : "Tap the card again to play it";
 }
 
 /* ---------- player turn ---------- */
@@ -845,26 +905,36 @@ function onCardClick(handIdx) {
   const c = CARDS[cardId];
   if (c.cost > bt.energy) return;
 
-  // toggle off if re-clicking the selected card
+  const aliveEnemies = bt.enemies.filter(e => e.hp > 0);
+  const autoTarget = aliveEnemies.length ? bt.enemies.indexOf(aliveEnemies[0]) : -1;
+  const needsTarget = (c.fx.dmg != null || c.fx.enemyStatus) && !c.fx.aoe && aliveEnemies.length > 1;
+
+  // tapping the already-selected card: confirm it (touch) or deselect (targeting)
   if (pendingCard && pendingCard.handIdx === handIdx) {
-    pendingCard = null;
-    renderBattle();
+    if (pendingCard.needsTarget) {
+      pendingCard = null;
+      renderBattle();
+    } else {
+      pendingCard = null;
+      playCard(handIdx, autoTarget);
+    }
     return;
   }
 
-  const aliveEnemies = bt.enemies.filter(e => e.hp > 0);
-  const needsTarget = (c.fx.dmg != null || c.fx.enemyStatus) && !c.fx.aoe && aliveEnemies.length > 1;
   if (needsTarget) {
-    pendingCard = { handIdx };
+    pendingCard = { handIdx, needsTarget: true };
+    renderBattle();
+  } else if (IS_TOUCH) {
+    pendingCard = { handIdx, needsTarget: false };  // lift the card, wait for confirm tap
     renderBattle();
   } else {
-    const target = aliveEnemies.length ? bt.enemies.indexOf(aliveEnemies[0]) : -1;
-    playCard(handIdx, target);
+    pendingCard = null;
+    playCard(handIdx, autoTarget);
   }
 }
 
 function playPendingCardOn(enemyIdx) {
-  if (!pendingCard || busy) return;
+  if (!pendingCard || !pendingCard.needsTarget || busy) return;
   const idx = pendingCard.handIdx;
   pendingCard = null;
   playCard(idx, enemyIdx);

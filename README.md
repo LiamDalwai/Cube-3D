@@ -6,7 +6,9 @@ An original, fully customizable deck-building card battler in a **single HTML fi
 
 ## Play it
 
-Open `CardWardens.html` in a browser. That's it.
+Open `CardWardens.html` in a browser. That's it — works on desktop and phones (touch controls: tap a card to pick it up, tap again or tap an enemy to play it).
+
+To get a shareable URL you can play from any phone, enable GitHub Pages for this repo (Settings → Pages → Deploy from a branch → `main`), then play at `https://liamdalwai.github.io/Cube-3D/CardWardens.html`.
 
 **Demo content:** 3 playable Wardens, 33 cards, Level 1 — *The Whispering Woods* (3 battles + a boss). Levels 2 and 3 are shown on the map as coming soon; we're building them one at a time.
 
