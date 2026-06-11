@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roofing Prospects CRM</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --surface3: #22222f;
+    --border: #2a2a3a;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --accent3: #43e97b;
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --text3: #5a5a78;
+    --verified: #43e97b;
+    --confirm: #f9ca24;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 20% 20%, rgba(108,99,255,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(255,101,132,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(67,233,123,0.04) 0%, transparent 60%);
+    animation: bgPulse 12s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes bgPulse {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(1.05) rotate(2deg); }
+  }
+
+  .app { position: relative; z-index: 1; max-width: 1600px; margin: 0 auto; padding: 24px; }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 28px;
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+    animation: slideDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  .header-left h1 {
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #6c63ff, #ff6584, #43e97b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+  .header-left p { color: var(--text2); font-size: 13px; margin-top: 2px; }
+  .header-actions { display: flex; gap: 10px; align-items: center; }
+  .btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:hover { transform: translateY(-2px) scale(1.03); }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 16px rgba(108,99,255,0.3); }
+  .btn-secondary { background: var(--surface3); color: var(--text); border: 1px solid var(--border); }
+  .btn-success { background: var(--accent3); color: #0a0a0f; box-shadow: 0 4px 16px rgba(67,233,123,0.3); }
+
+  /* Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.5s 0.1s both;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+  .stat-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(108,99,255,0.15); }
+  .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 8px; }
+  .stat-value { font-size: 28px; font-weight: 800; }
+  .stat-value.purple { color: var(--accent); }
+  .stat-value.green { color: var(--accent3); }
+  .stat-value.yellow { color: var(--confirm); }
+  .stat-value.red { color: var(--accent2); }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 20px;
+    animation: fadeUp 0.5s 0.2s both;
+  }
+  .search-wrap { position: relative; flex: 1; min-width: 220px; }
+  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text3); pointer-events: none; }
+  .search-input, .filter-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-input { width: 100%; padding-left: 36px; }
+  .search-input:focus, .filter-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+  }
+  .filter-select { min-width: 140px; cursor: pointer; appearance: none; padding-right: 28px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239090a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+  .view-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .view-btn { padding: 8px 14px; border: none; background: transparent; color: var(--text2); cursor: pointer; transition: all 0.2s; font-size: 13px; }
+  .view-btn.active { background: var(--accent); color: #fff; }
+
+  /* Table View */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    animation: fadeUp 0.5s 0.3s both;
+  }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead { background: var(--surface2); position: sticky; top: 0; z-index: 5; }
+  th {
+    padding: 13px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text3);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+  }
+  th:hover { color: var(--text); }
+  th.sorted { color: var(--accent); }
+  th .sort-icon { margin-left: 4px; opacity: 0.5; font-size: 10px; }
+  th.sorted .sort-icon { opacity: 1; }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s, transform 0.15s;
+    animation: rowFadeIn 0.3s both;
+  }
+  @keyframes rowFadeIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+  tbody tr:hover { background: var(--surface2); }
+  tbody tr:last-child { border-bottom: none; }
+  td { padding: 12px 16px; vertical-align: middle; }
+  .td-company { font-weight: 600; color: var(--text); max-width: 180px; }
+  .td-company small { display: block; color: var(--text2); font-weight: 400; font-size: 11px; margin-top: 1px; }
+  .td-contact { color: var(--text2); font-size: 12px; max-width: 140px; }
+  .td-phone a { color: var(--accent); text-decoration: none; font-size: 12px; white-space: nowrap; }
+  .td-phone a:hover { text-decoration: underline; }
+  .td-email a { color: var(--accent3); text-decoration: none; font-size: 11px; }
+  .td-email a:hover { text-decoration: underline; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .badge-verified { background: rgba(67,233,123,0.15); color: var(--verified); border: 1px solid rgba(67,233,123,0.3); }
+  .badge-confirm { background: rgba(249,202,36,0.12); color: var(--confirm); border: 1px solid rgba(249,202,36,0.3); }
+  .badge-state { background: rgba(108,99,255,0.12); color: var(--accent); border: 1px solid rgba(108,99,255,0.2); font-size: 11px; padding: 2px 7px; }
+  .stars { color: var(--confirm); font-size: 12px; white-space: nowrap; }
+  .stars span { color: var(--text2); font-size: 11px; margin-left: 2px; }
+
+  /* Editable cells */
+  .editable { position: relative; }
+  .edit-field {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 12px;
+    padding: 5px 8px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  .edit-field:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(108,99,255,0.15); }
+  .edit-field[type="date"] { min-width: 130px; color-scheme: dark; }
+
+  .status-select {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+    min-width: 110px;
+  }
+  .status-select:focus { border-color: var(--accent); }
+  .status-new { color: var(--text2); }
+  .status-contacted { color: #60a5fa; }
+  .status-interested { color: var(--accent3); }
+  .status-followup { color: var(--confirm); }
+  .status-closed { color: var(--accent2); }
+  .status-notfit { color: var(--text3); }
+
+  .rating-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(249,202,36,0.1);
+    border: 1px solid rgba(249,202,36,0.25);
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--confirm);
+    white-space: nowrap;
+  }
+
+  /* Card View */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    animation: fadeUp 0.5s 0.3s both;
+  }
+  .prospect-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+    animation: cardIn 0.4s both;
+  }
+  @keyframes cardIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .prospect-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .prospect-card:hover { transform: translateY(-4px); border-color: rgba(108,99,255,0.4); box-shadow: 0 12px 40px rgba(108,99,255,0.15); }
+  .prospect-card:hover::before { opacity: 1; }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+  .card-title { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; }
+  .card-location { font-size: 12px; color: var(--text2); margin-top: 3px; }
+  .card-badges { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
+  .card-info { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .card-info-item { font-size: 12px; }
+  .card-info-label { color: var(--text3); font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+  .card-info-value { color: var(--text2); }
+  .card-info-value a { color: var(--accent); text-decoration: none; }
+  .card-info-value a:hover { text-decoration: underline; }
+  .card-divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+  .card-fields { display: grid; gap: 10px; }
+  .card-field-group label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text3); margin-bottom: 4px; }
+  .card-angle { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 12px; color: var(--text2); font-style: italic; margin-bottom: 12px; }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+  .page-info { color: var(--text2); font-size: 13px; }
+  .page-buttons { display: flex; gap: 6px; }
+  .page-btn {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .page-btn:hover { background: var(--accent); border-color: var(--accent); }
+  .page-btn.active { background: var(--accent); border-color: var(--accent); }
+  .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* Toast */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 13px;
+    color: var(--text);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 240px;
+    animation: toastIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(40px) scale(0.9); } to { opacity: 1; transform: translateX(0) scale(1); } }
+  @keyframes toastOut { to { opacity: 0; transform: translateX(40px) scale(0.9); } }
+  .toast.leaving { animation: toastOut 0.3s forwards; }
+  .toast-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; }
+  .toast-success .toast-icon { background: rgba(67,233,123,0.2); color: var(--accent3); }
+  .toast-info .toast-icon { background: rgba(108,99,255,0.2); color: var(--accent); }
+
+  /* Progress bar */
+  .follow-up-overdue { color: var(--accent2) !important; }
+  .follow-up-soon { color: var(--confirm) !important; }
+
+  /* No results */
+  .no-results {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text3);
+  }
+  .no-results svg { opacity: 0.3; margin-bottom: 16px; }
+  .no-results p { font-size: 16px; color: var(--text2); margin-bottom: 4px; }
+  .no-results small { font-size: 13px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  @media (max-width: 768px) {
+    .app { padding: 12px; }
+    header { flex-direction: column; gap: 12px; align-items: flex-start; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .controls { flex-direction: column; }
+    .search-wrap { min-width: unset; }
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="header-left">
+      <h1>🏠 Roofing Prospects CRM</h1>
+      <p id="headerSub">Loading prospects...</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="exportCSV()">⬇ Export CSV</button>
+      <button class="btn btn-success" onclick="saveAll()">💾 Save All</button>
+    </div>
+  </header>
+
+  <div class="stats-grid" id="statsGrid"></div>
+
+  <div class="controls">
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" class="search-input" id="searchInput" placeholder="Search companies, contacts, emails..." oninput="applyFilters()">
+    </div>
+    <select class="filter-select" id="stateFilter" onchange="applyFilters()">
+      <option value="">All States</option>
+    </select>
+    <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+      <option value="">All Statuses</option>
+      <option value="New">New</option>
+      <option value="Contacted">Contacted</option>
+      <option value="Interested">Interested</option>
+      <option value="Follow-up">Follow-up</option>
+      <option value="Closed">Closed</option>
+      <option value="Not a Fit">Not a Fit</option>
+    </select>
+    <select class="filter-select" id="emailFilter" onchange="applyFilters()">
+      <option value="">All Emails</option>
+      <option value="VERIFIED">Verified</option>
+      <option value="CONFIRM">Confirm</option>
+    </select>
+    <div class="view-toggle">
+      <button class="view-btn active" id="tableViewBtn" onclick="setView('table')">☰ Table</button>
+      <button class="view-btn" id="cardViewBtn" onclick="setView('cards')">⊞ Cards</button>
+    </div>
+    <button class="btn btn-secondary" onclick="clearFilters()" style="white-space:nowrap">✕ Clear</button>
+  </div>
+
+  <div id="mainContent"></div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+const RAW_DATA = [
+  ["AK","Wasilla","All North Roofing","(family-owned, GC #235362)","+1 907-600-8865","allnorthroofing.com","VERIFIED","info@allnorthroofing.com","","","Alaska local proof"],
+  ["AK","Anchorage","Premier Roofing Co.","(41-yr family business)","+1 907-346-4131","premierroofingalaska.com","VERIFIED","Info@PremierRoofingAlaska.com","","","Alaska local proof"],
+  ["AK","Anchorage area","Chugach Roofing Solutions","(solo operator)","907-691-4489","","VERIFIED","chugachroofingsolutions@gmail.com","","","Alaska local proof"],
+  ["AK","Nenana","The General Design & Construction","","+1 907-217-0832","thegeneraldesignandconstruction.com","CONFIRM","info@thegeneraldesignandconstruction.com","","","Alaska local proof"],
+  ["NE","Omaha","Essential Roofing Guys","","(402) 795-8511","essentialroofingguys.com","VERIFIED","info@essentialroofingguys.com","","","Standard"],
+  ["IL","Charleston","Roofing USA","","+1 217-345-7664","theroofingusa.net","VERIFIED","info@theroofingusa.com","","","Standard"],
+  ["UT","Salt Lake City","American Roofing Company","Brent Yorgason (President)","+1 801-269-1276","amcoroof.com","VERIFIED","brent@amcoroof.com","4.7","249","Standard / named owner"],
+  ["UT","Salt Lake City","Vertex Roofing","Devin (Founder), Gavin (GM)","+1 801-618-3154","vertexroofingslc.com","VERIFIED","devin@vertexroofing.net","4.9","405","Standard / named owner"],
+  ["UT","West Valley City","The Roof Doctor","Chris / Rob","","theroofdoctorutah.com","CONFIRM","info@theroofdoctorutah.com","4.9","327","Standard"],
+  ["UT","Salt Lake City","Shingle Pro Roofing","Jason (owner), Kim","+1 801-567-9093","shingleproroofing.com","CONFIRM","info@shingleproroofing.com","5.0","571","Standard / named owner"],
+  ["UT","Clearfield","Legacy Roofing Utah","Jesse / Ryan (owners)","+1 801-837-8182","legacyroofingutah.com","CONFIRM","info@legacyroofingutah.com","4.9","640","Standard / named owner"],
+  ["UT","Salt Lake City","ASAP Roofing & Exteriors","Matthew (owner)","+1 801-997-5878","asaproofingutah.com","CONFIRM","info@asaproofingutah.com","5.0","32","Standard / named owner"],
+  ["UT","West Valley City","Roof-It, Inc.","David Johnson (owner)","+1 801-809-7663","roof-it.net","CONFIRM","info@roof-it.net","4.9","238","Standard / named owner"],
+  ["UT","Salt Lake City","Vault Roofing LLC","Levi (owner)","+1 801-419-7655","vaultroofingutah.com","CONFIRM","info@vaultroofingutah.com","5.0","105","Standard / named owner"],
+  ["UT","Orem","A1 Roofing Utah","Israel, Cassidy, Jake","+1 801-471-2055","a1roofingutah.com","CONFIRM","info@a1roofingutah.com","4.9","537","Standard"],
+  ["UT","Provo","Liberty Roofing of Utah","Dave Hemmert (owner)","+1 801-377-7720","libertyroofingutah.com","CONFIRM","info@libertyroofingutah.com","4.7","71","Standard / named owner"],
+  ["UT","Santaquin","Epic Roofing Contractors","Cody (owner), Colton","+1 385-200-4040","epicroofingutah.com","CONFIRM","info@epicroofingutah.com","4.9","58","Standard / named owner"],
+  ["UT","Orem","Cascade Roofing Services","Mike / Alan Griffin (owner)","+1 801-831-4428","cascaderoofingutah.com","CONFIRM","info@cascaderoofingutah.com","4.9","53","Standard / named owner"],
+  ["UT","Provo","Cali Roofing Inc","","+1 801-377-2420","caliroofingutah.com","CONFIRM","info@caliroofingutah.com","4.2","11","Standard"],
+  ["OK","Oklahoma City","Statewide Roofing","Blaze Gray, Jared","+1 405-790-0109","statewideroofingok.com","CONFIRM","info@statewideroofingok.com","4.9","267","Standard / named owner"],
+  ["OK","Oklahoma City","OKC Roofers","Tyler, Eric Aultz, Britton","+1 405-796-8858","okcroofers.com","CONFIRM","info@okcroofers.com","4.9","463","Standard"],
+  ["OK","Oklahoma City","Prestige Roofing GC & Construction","Chris Clarkson","+1 405-795-8700","prestigeroofingokc.com","CONFIRM","info@prestigeroofingokc.com","5.0","106","Standard / named owner"],
+  ["OK","Oklahoma City","Wright Way Roofing & Construction","Jeremy Wright (owner), Michael","+1 405-402-5075","wrightwayok.com","CONFIRM","info@wrightwayok.com","4.9","51","Standard / named owner"],
+  ["OK","Oklahoma City","Shamrock Roofing and Construction","Aaron Dugas, Chance Stark","+1 405-300-1477","shamrockroofs.com","CONFIRM","info@shamrockroofs.com","4.9","161","Standard"],
+  ["OK","Oklahoma City","City Roofing and Construction","Mr. Peruch, Rigo","+1 405-514-0294","cityroofingok.com","CONFIRM","info@cityroofingok.com","5.0","82","Standard"],
+  ["OK","Oklahoma City","Elliott Roofing","Matt, Tony Simon (40+ yrs)","+1 405-789-4646","elliottroofing.com","CONFIRM","info@elliottroofing.com","4.9","642","Standard"],
+  ["OK","Oklahoma City","Hero General Contracting","Steve Johnson, Ray Salazar","+1 405-896-5591","heroconstructionok.com","CONFIRM","info@heroconstructionok.com","4.9","190","Standard / named owner"],
+  ["OK","Tulsa","Arrowhead Roofing","Jose + crew","+1 918-743-9257","arrowheadroofingok.com","CONFIRM","info@arrowheadroofingok.com","4.9","627","Standard"],
+  ["OK","Tulsa","A. Fricker Roofing and Waterproofing","Joe Lockwood, Dalton, Andrew","+1 918-402-7167","frickerroofing.com","CONFIRM","info@frickerroofing.com","4.9","644","Standard"],
+  ["OK","Tulsa","RainTech Roofing Sheet Metal & Gutters","Eddie, Teresa, Daniel","+1 918-449-1474","raintechroofing.com","CONFIRM","info@raintechroofing.com","4.9","488","Standard"],
+  ["OK","Tulsa","A-Best Roofing","Nate (sales), Felipe","+1 539-242-7966","abestroofing.com","CONFIRM","info@abestroofing.com","4.7","1081","Standard"],
+  ["OK","Tulsa","Nations Best Roofing And Construction","Jeff (owner), Sam","+1 918-370-0909","nationsbestroofing.com","CONFIRM","info@nationsbestroofing.com","4.9","204","Standard / named owner"],
+  ["OK","Tulsa","Mighty Dog Roofing of Tulsa","Luke, Hunter, JD","+1 918-212-5646","mightydogroofing.com","CONFIRM","tulsa@mightydogroofing.com","5.0","311","Standard"],
+  ["CO","Denver","Elite Roofing & Solar","Doug Swanson, Cody, Phil","+1 303-296-0361","eliteroofingco.com","CONFIRM","info@eliteroofingco.com","4.9","638","Standard"],
+  ["CO","Denver","Sol Vista Roofing","Ty (PM)","+1 720-665-9868","solvistaroofing.com","CONFIRM","info@solvistaroofing.com","4.9","383","Standard"],
+  ["CO","Denver","Formula Roofing and Remodeling","Sam (owner), Tynan","+1 303-600-8696","formularoofing.com","CONFIRM","info@formularoofing.com","4.8","499","Standard / named owner"],
+  ["CO","Denver","New Roof Plus","Greg Jones (owner), Brendan","+1 303-529-7554","newroofplus.com","CONFIRM","info@newroofplus.com","4.9","191","Standard / named owner"],
+  ["CO","Denver","Peak To Peak Roofing & Exteriors","Damen, Shey Mares","+1 720-740-4325","peaktopeakroof.com","CONFIRM","info@peaktopeakroof.com","4.9","418","Standard"],
+  ["CO","Denver","Core Roofing + Solar","David Marsh, Jonathan Watsky","+1 303-647-9713","coreroofingcolorado.com","CONFIRM","info@coreroofingcolorado.com","4.9","424","Standard / named owner"],
+  ["CO","Denver","730 South Exteriors & Roofing","Chris (owner), Omar","+1 303-698-0580","730south.com","CONFIRM","info@730south.com","4.9","387","Standard / named owner"],
+  ["CO","Denver","Premier Roofing Company","Ryan Lee, Christian, Andrew","+1 303-233-7663","premiereroof.com","CONFIRM","info@premiereroof.com","4.3","584","Standard"],
+  ["CO","Denver","Interstate Roofing, Inc.","Matt Bulger, Brian Knight","+1 303-763-9114","interstateroof.com","CONFIRM","info@interstateroof.com","4.7","964","Standard"],
+  ["AZ","Phoenix","Phoenix Roofing & Repair","Guthries, Riley, Eugene (owners)","+1 602-497-0154","phoenixroofingrepair.com","CONFIRM","info@phoenixroofingrepair.com","4.9","1014","Standard / named owner"],
+  ["AZ","Phoenix","Stonecreek Roofing","Nate, Sarah, Kinsey","+1 602-324-3400","stonecreekroofing.com","CONFIRM","info@stonecreekroofing.com","4.9","633","Standard"],
+  ["AZ","Phoenix","Lyons Roofing","Andy + team (since 1993)","+1 602-276-5515","lyonsroofing.com","CONFIRM","info@lyonsroofing.com","4.8","691","Standard"],
+  ["AZ","Phoenix","Brown Roofing LLC","Craig (owner), Jesse, Debbie","+1 602-626-5559","brownroofingllc.com","CONFIRM","info@brownroofingllc.com","4.9","273","Standard / named owner"],
+  ["AZ","Phoenix","Arizona Roofers","Yousef, Cole, Brandon, Brett","+1 480-613-8932","arizonaroofers.com","CONFIRM","info@arizonaroofers.com","4.9","687","Standard"],
+  ["AZ","Phoenix","Valley Roofing and Repair","Zach (owner), Randy","+1 623-250-7663","valleyroofingaz.com","CONFIRM","info@valleyroofingaz.com","5.0","136","Standard / named owner"],
+  ["AZ","Phoenix","Allstate Roofing Contractors","Brad, Nelson, Samantha, Hailey","+1 602-484-7663","allstateroofingaz.com","CONFIRM","info@allstateroofingaz.com","4.9","214","Standard"],
+  ["AZ","Phoenix","Arizona Roofing and Restoration","Bok (owner)","+1 480-771-8876","azroofingrestoration.com","CONFIRM","info@azroofingrestoration.com","5.0","134","Standard / named owner"],
+  ["AZ","Phoenix","Multi-Pro Roof Solutions","Tony Berstler, Shawn, Joshua","+1 602-888-7663","multiproroof.com","CONFIRM","info@multiproroof.com","4.9","314","Standard / named owner"],
+  ["AZ","Phoenix","SUNVEK Roofing","David, Felipe Gonzalez, Leo","+1 623-349-7663","sunvek.com","CONFIRM","info@sunvek.com","4.9","306","Standard"],
+  ["TX","Dallas","New View Roofing","Tom, Burton Hughes, Joey Hong","+1 469-232-7220","newviewroofing.com","CONFIRM","info@newviewroofing.com","4.9","687","Standard"],
+  ["TX","Dallas","T Rock Roofing & Contracting","Brandon, Dawson, Max Gruene","+1 469-931-9867","trockroofing.com","CONFIRM","info@trockroofing.com","4.9","747","Standard"],
+  ["TX","Dallas","Priority Roofing","Anthony Allen, Frank Vitale","+1 469-615-8193","priorityroofingtx.com","CONFIRM","info@priorityroofingtx.com","5.0","958","Standard"],
+  ["TX","Dallas","Arrington Roofing","Randy Eubanks, Matt","+1 214-698-8443","arringtonroofing.com","CONFIRM","info@arringtonroofing.com","4.9","347","Standard / named owner"],
+  ["TX","Dallas","Shepherd Roofing & Renovations","David Espinoza, Jose","+1 972-244-3705","shepherdroofing.com","CONFIRM","info@shepherdroofing.com","5.0","216","Standard / named owner"],
+  ["TX","Dallas","United Roofing & General Contractors","Adrian, Greg, Cody, Marshall","+1 888-863-8858","unitedroofingtx.com","CONFIRM","info@unitedroofingtx.com","5.0","63","Standard"],
+  ["TX","Dallas","White Rock Roofing","Jose Reyes, Julio","+1 972-362-9647","whiterockroofing.com","CONFIRM","info@whiterockroofing.com","5.0","208","Standard"],
+  ["TX","Dallas","Knox Roofing","Musa, Dakota, Derek Chandler","+1 214-646-6625","knoxroofing.com","CONFIRM","info@knoxroofing.com","5.0","220","Standard / named owner"],
+  ["TX","Dallas","AM Roofing Company","Ben Posey (owner)","+1 214-980-4366","amroofingcompany.com","CONFIRM","info@amroofingcompany.com","4.9","39","Standard / named owner"],
+  ["TX","Dallas","Bold Roofing","Robert Stevens, Gabe Gonzales","+1 972-380-9300","boldroofing.com","CONFIRM","info@boldroofing.com","4.7","605","Standard"],
+  ["MO","Kansas City","JR & Co.","Jake R., Chad Amis, Jackson","+1 816-587-6148","jrcoroofing.com","CONFIRM","info@jrcoroofing.com","4.8","315","Standard / named owner"],
+  ["MO","Kansas City","Bumble Roofing of Greater KC","Patrick, Ryan","+1 913-675-9187","bumbleroofing.com","CONFIRM","kansascity@bumbleroofing.com","4.9","60","Standard"],
+  ["MO","Kansas City","Kansas City Flat Roof Co. LLC","Allen Ely (owner)","+1 816-207-5000","kcflatroof.com","CONFIRM","info@kcflatroof.com","5.0","11","Standard / named owner"],
+  ["MO","Kansas City","Garcia Roofing Kansas City","David Garcia (owner)","+1 816-286-7387","garciaroofingkc.com","CONFIRM","info@garciaroofingkc.com","5.0","205","Standard / named owner"],
+  ["KS","Kansas City","Easton Roofing","Austin, Steve, AJ","+1 913-257-5426","eastonroofing.com","CONFIRM","info@eastonroofing.com","4.8","400","Standard"],
+  ["MO","Kansas City","Legacy Roofing and Exteriors","Josh (owner)","+1 816-210-6099","legacyroofingkc.com","CONFIRM","info@legacyroofingkc.com","5.0","108","Standard / named owner"],
+  ["MO","Gladstone","Christian Brothers Roofing LLC","Cliff, Colby, Kyle","+1 816-453-7663","christianbrothersroofing.net","CONFIRM","info@christianbrothersroofing.net","5.0","1886","Standard"],
+  ["MO","Kansas City","Priority Roofing (KC)","Austin Bales, Dante","+1 816-894-7281","priorityroofingkc.com","CONFIRM","info@priorityroofingkc.com","4.9","189","Standard"],
+  ["MO","Kansas City","Roof Check Contracting","Sergio, Cisco, Blythany","+1 816-799-7663","roofcheckkc.com","CONFIRM","info@roofcheckkc.com","4.9","51","Standard / named owner"],
+  ["KS","Kansas City","Murphy & Sons Roofing, Inc","Chris Murphy (family, 40yrs)","+1 913-287-2116","murphyandsonsroofing.com","CONFIRM","info@murphyandsonsroofing.com","4.9","233","Standard / named owner"],
+  ["ID","Boise","Point Roofing & Restoration","Ian, Frank, Jesse, Zak","+1 208-761-5106","pointroofing.com","CONFIRM","info@pointroofing.com","4.9","413","Standard / named owner"],
+  ["ID","Boise","Kings Roofing & Contracting LLC","Ryan Santoro (owner)","+1 208-803-8341","kingsroofingidaho.com","CONFIRM","info@kingsroofingidaho.com","5.0","85","Standard / named owner"],
+  ["ID","Meridian","Idaho Roofing Contractors","Tyler, Ben, Will","+1 208-921-7821","idahoroofingcontractors.com","CONFIRM","info@idahoroofingcontractors.com","4.9","901","Standard / named owner"],
+  ["ID","Boise","Flux Boise Roofing & Siding","","+1 208-476-6318","fluxboise.com","CONFIRM","info@fluxboise.com","5.0","25","Standard"],
+  ["ID","Boise","Signature Roofing","Irving (PM), Ricky, Efrain","+1 208-631-1640","signatureroofingidaho.com","CONFIRM","info@signatureroofingidaho.com","4.9","495","Standard / named owner"],
+  ["ID","Boise","Blue Goat Roofing Inc.","Nick (owner)","+1 208-999-0775","bluegoatroofing.com","CONFIRM","info@bluegoatroofing.com","5.0","264","Standard / named owner"],
+  ["ID","Boise","Intermountain Roofing Company","Caleb (owner)","+1 208-713-5871","intermountainroofingco.com","CONFIRM","info@intermountainroofingco.com","5.0","48","Standard / named owner"],
+  ["ID","Boise","208 Roofing","Wayne, Shane (PM)","+1 208-591-8997","208roofing.com","CONFIRM","info@208roofing.com","5.0","61","Standard / named owner"],
+  ["ID","Boise","Owyhee Roofing","Jeff (owner)","+1 208-440-7693","owyheeroofing.com","CONFIRM","info@owyheeroofing.com","4.9","92","Standard / named owner"],
+  ["ID","Boise","Mighty Dog Roofing (Boise)","Jeremy, Blake, Carson","+1 208-646-9890","mightydogroofing.com","CONFIRM","boise@mightydogroofing.com","4.8","106","Standard"]
+];
+
+const STORAGE_KEY = 'roofing_crm_v2';
+let prospects = [];
+let filtered = [];
+let currentView = 'table';
+let currentPage = 1;
+const PER_PAGE = 25;
+let sortCol = -1, sortDir = 1;
+
+function loadData() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      prospects = RAW_DATA.map((row, i) => ({
+        id: i,
+        state: row[0], city: row[1], company: row[2], contact: row[3],
+        phone: row[4], website: row[5], emailStatus: row[6], email: row[7],
+        rating: row[8], reviews: row[9], angle: row[10],
+        status: parsed[i]?.status || 'New',
+        dateContacted: parsed[i]?.dateContacted || '',
+        followUp: parsed[i]?.followUp || ''
+      }));
+    } catch(e) { buildFromRaw(); }
+  } else { buildFromRaw(); }
+}
+
+function buildFromRaw() {
+  prospects = RAW_DATA.map((row, i) => ({
+    id: i, state: row[0], city: row[1], company: row[2], contact: row[3],
+    phone: row[4], website: row[5], emailStatus: row[6], email: row[7],
+    rating: row[8], reviews: row[9], angle: row[10],
+    status: 'New', dateContacted: '', followUp: ''
+  }));
+}
+
+function saveAll() {
+  const data = {};
+  prospects.forEach(p => {
+    data[p.id] = { status: p.status, dateContacted: p.dateContacted, followUp: p.followUp };
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  showToast('All changes saved!', 'success');
+}
+
+function updateField(id, field, value) {
+  const p = prospects.find(x => x.id === id);
+  if (p) { p[field] = value; saveAll(); }
+}
+
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const state = document.getElementById('stateFilter').value;
+  const status = document.getElementById('statusFilter').value;
+  const emailF = document.getElementById('emailFilter').value;
+
+  filtered = prospects.filter(p => {
+    const matchQ = !q || [p.company, p.contact, p.email, p.phone, p.city, p.state].some(v => v.toLowerCase().includes(q));
+    const matchState = !state || p.state === state;
+    const matchStatus = !status || p.status === status;
+    const matchEmail = !emailF || p.emailStatus === emailF;
+    return matchQ && matchState && matchStatus && matchEmail;
+  });
+
+  if (sortCol >= 0) applySorting();
+  currentPage = 1;
+  renderContent();
+  updateStats();
+}
+
+function applySorting() {
+  const cols = ['state','city','company','contact','phone','emailStatus','rating','status','dateContacted','followUp'];
+  const key = cols[sortCol];
+  if (!key) return;
+  filtered.sort((a,b) => {
+    let av = a[key] || '', bv = b[key] || '';
+    if (key === 'rating') { av = parseFloat(av)||0; bv = parseFloat(bv)||0; }
+    if (typeof av === 'number') return (av - bv) * sortDir;
+    return av.localeCompare(bv) * sortDir;
+  });
+}
+
+function sortBy(col) {
+  if (sortCol === col) sortDir *= -1;
+  else { sortCol = col; sortDir = 1; }
+  applySorting();
+  renderContent();
+}
+
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('stateFilter').value = '';
+  document.getElementById('statusFilter').value = '';
+  document.getElementById('emailFilter').value = '';
+  applyFilters();
+}
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('tableViewBtn').classList.toggle('active', v === 'table');
+  document.getElementById('cardViewBtn').classList.toggle('active', v === 'cards');
+  currentPage = 1;
+  renderContent();
+}
+
+function getPage() {
+  const start = (currentPage - 1) * PER_PAGE;
+  return filtered.slice(start, start + PER_PAGE);
+}
+
+function renderContent() {
+  const wrap = document.getElementById('mainContent');
+  const page = getPage();
+  const totalPages = Math.ceil(filtered.length / PER_PAGE);
+
+  if (!filtered.length) {
+    wrap.innerHTML = `<div class="no-results">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <p>No prospects found</p><small>Try adjusting your filters</small>
+    </div>`;
+    return;
+  }
+
+  if (currentView === 'table') {
+    wrap.innerHTML = renderTable(page, totalPages);
+  } else {
+    wrap.innerHTML = `<div class="cards-grid">${page.map(p => renderCard(p)).join('')}</div>` + renderPagination(totalPages);
+  }
+  animateRows();
+}
+
+function renderTable(page, totalPages) {
+  const si = (col, label) => {
+    const active = sortCol === col ? 'sorted' : '';
+    const icon = sortCol === col ? (sortDir === 1 ? '↑' : '↓') : '↕';
+    return `<th class="${active}" onclick="sortBy(${col})">${label} <span class="sort-icon">${icon}</span></th>`;
+  };
+  const rows = page.map((p, i) => {
+    const ratingHtml = p.rating ? `<span class="rating-badge">⭐ ${p.rating} <span style="color:var(--text3);font-size:10px">(${p.reviews})</span></span>` : '<span style="color:var(--text3)">—</span>';
+    const fuClass = getFollowUpClass(p.followUp);
+    return `<tr style="animation-delay:${i*0.03}s">
+      <td><span class="badge badge-state">${p.state}</span></td>
+      <td style="color:var(--text2);font-size:12px">${p.city}</td>
+      <td class="td-company">${esc(p.company)}<small>${esc(p.contact)}</small></td>
+      <td class="td-phone"><a href="tel:${p.phone}">${p.phone||'—'}</a></td>
+      <td class="td-email"><a href="mailto:${p.email}">${p.email}</a>${p.website?`<br><a href="https://${p.website}" target="_blank" style="color:var(--text3);font-size:10px">↗ ${p.website}</a>`:''}</td>
+      <td><span class="badge badge-${p.emailStatus.toLowerCase()}">${p.emailStatus}</span></td>
+      <td>${ratingHtml}</td>
+      <td class="editable">
+        <select class="status-select status-${p.status.toLowerCase().replace(/\s+/g,'')}
+" onchange="updateField(${p.id},'status',this.value);this.className='status-select status-'+this.value.toLowerCase().replace(/\\s+/g,'')">
+          ${['New','Contacted','Interested','Follow-up','Closed','Not a Fit'].map(s=>`<option value="${s}"${p.status===s?' selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td class="editable"><input type="date" class="edit-field" value="${p.dateContacted}" onchange="updateField(${p.id},'dateContacted',this.value)" style="min-width:130px"></td>
+      <td class="editable"><input type="date" class="edit-field ${fuClass}" value="${p.followUp}" onchange="updateField(${p.id},'followUp',this.value)" style="min-width:130px"></td>
+    </tr>`;
+  }).join('');
+
+  return `<div class="table-wrap">
+    <div class="table-scroll">
+      <table>
+        <thead><tr>
+          ${si(0,'State')}${si(1,'City')}${si(2,'Company / Contact')}
+          ${si(4,'Phone')}<th>Email / Website</th>${si(5,'Email Status')}
+          ${si(6,'Rating')}${si(7,'Status')}${si(8,'Date Contacted')}${si(9,'Follow-up Due')}
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    ${renderPagination(totalPages)}
+  </div>`;
+}
+
+function renderCard(p) {
+  const ratingHtml = p.rating ? `<span class="rating-badge">⭐ ${p.rating} <small>(${p.reviews} reviews)</small></span>` : '';
+  const fuClass = getFollowUpClass(p.followUp);
+  return `<div class="prospect-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">${esc(p.company)}</div>
+        <div class="card-location">📍 ${p.city}, ${p.state}</div>
+        <div class="card-badges">
+          <span class="badge badge-state">${p.state}</span>
+          <span class="badge badge-${p.emailStatus.toLowerCase()}">${p.emailStatus}</span>
+          ${ratingHtml}
+        </div>
+      </div>
+    </div>
+    ${p.angle ? `<div class="card-angle">💡 ${esc(p.angle)}</div>` : ''}
+    <div class="card-info">
+      <div class="card-info-item"><div class="card-info-label">Contact</div><div class="card-info-value">${esc(p.contact)||'—'}</div></div>
+      <div class="card-info-item"><div class="card-info-label">Phone</div><div class="card-info-value"><a href="tel:${p.phone}">${p.phone||'—'}</a></div></div>
+      <div class="card-info-item"><div class="card-info-label">Email</div><div class="card-info-value"><a href="mailto:${p.email}">${p.email}</a></div></div>
+      <div class="card-info-item"><div class="card-info-label">Website</div><div class="card-info-value">${p.website?`<a href="https://${p.website}" target="_blank">${p.website}</a>`:'—'}</div></div>
+    </div>
+    <hr class="card-divider">
+    <div class="card-fields">
+      <div class="card-field-group">
+        <label>Status</label>
+        <select class="status-select" onchange="updateField(${p.id},'status',this.value)">
+          ${['New','Contacted','Interested','Follow-up','Closed','Not a Fit'].map(s=>`<option value="${s}"${p.status===s?' selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="card-field-group">
+          <label>Date Contacted</label>
+          <input type="date" class="edit-field" value="${p.dateContacted}" onchange="updateField(${p.id},'dateContacted',this.value)">
+        </div>
+        <div class="card-field-group">
+          <label>Follow-up Due</label>
+          <input type="date" class="edit-field ${fuClass}" value="${p.followUp}" onchange="updateField(${p.id},'followUp',this.value)">
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderPagination(totalPages) {
+  if (totalPages <= 1) return '';
+  const start = (currentPage-1)*PER_PAGE+1;
+  const end = Math.min(currentPage*PER_PAGE, filtered.length);
+  let pages = '';
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
+      pages += `<button class="page-btn${i===currentPage?' active':''}" onclick="goPage(${i})">${i}</button>`;
+    } else if (Math.abs(i - currentPage) === 3) {
+      pages += `<button class="page-btn" disabled>…</button>`;
+    }
+  }
+  return `<div class="pagination">
+    <span class="page-info">Showing ${start}–${end} of ${filtered.length}</span>
+    <div class="page-buttons">
+      <button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>
+      ${pages}
+      <button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>
+    </div>
+  </div>`;
+}
+
+function goPage(n) {
+  const total = Math.ceil(filtered.length / PER_PAGE);
+  currentPage = Math.max(1, Math.min(n, total));
+  renderContent();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateStats() {
+  const total = prospects.length;
+  const statusCounts = {};
+  prospects.forEach(p => { statusCounts[p.status] = (statusCounts[p.status]||0)+1; });
+  const contacted = (statusCounts['Contacted']||0) + (statusCounts['Interested']||0) + (statusCounts['Follow-up']||0);
+  const verified = prospects.filter(p => p.emailStatus === 'VERIFIED').length;
+  const today = new Date().toISOString().split('T')[0];
+  const overdueCount = prospects.filter(p => p.followUp && p.followUp < today && p.status !== 'Closed').length;
+
+  document.getElementById('statsGrid').innerHTML = [
+    { label: 'Total Prospects', value: total, cls: 'purple' },
+    { label: 'Verified Emails', value: verified, cls: 'green' },
+    { label: 'Contacted', value: contacted, cls: 'yellow' },
+    { label: 'Overdue Follow-ups', value: overdueCount, cls: 'red' },
+    { label: 'Interested', value: statusCounts['Interested']||0, cls: 'green' },
+    { label: 'Closed', value: statusCounts['Closed']||0, cls: 'purple' }
+  ].map(s => `<div class="stat-card">
+    <div class="stat-label">${s.label}</div>
+    <div class="stat-value ${s.cls}">${s.value}</div>
+  </div>`).join('');
+
+  document.getElementById('headerSub').textContent = `${filtered.length} of ${total} prospects • Auto-saves to browser`;
+}
+
+function populateFilters() {
+  const states = [...new Set(prospects.map(p => p.state))].sort();
+  const sel = document.getElementById('stateFilter');
+  states.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sel.appendChild(o); });
+}
+
+function getFollowUpClass(followUp) {
+  if (!followUp) return '';
+  const today = new Date().toISOString().split('T')[0];
+  const diff = (new Date(followUp) - new Date(today)) / 86400000;
+  if (diff < 0) return 'follow-up-overdue';
+  if (diff <= 3) return 'follow-up-soon';
+  return '';
+}
+
+function exportCSV() {
+  const headers = ['State','City','Business Name','Decision-Maker / Contact','Phone','Website','Email Status','Best Email','Google Rating','Review Count','Suggested Angle','Status','Date Contacted','Follow-up Due'];
+  const rows = prospects.map(p => [p.state,p.city,p.company,p.contact,p.phone,p.website,p.emailStatus,p.email,p.rating,p.reviews,p.angle,p.status,p.dateContacted,p.followUp].map(v => `"${(v||'').replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `roofing-prospects-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  showToast('CSV exported!', 'success');
+}
+
+function showToast(msg, type='info') {
+  const c = document.getElementById('toastContainer');
+  const icons = { success: '✓', info: 'i' };
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<div class="toast-icon">${icons[type]||'i'}</div><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { t.classList.add('leaving'); setTimeout(() => t.remove(), 300); }, 2500);
+}
+
+function animateRows() {
+  document.querySelectorAll('tbody tr, .prospect-card').forEach((el, i) => {
+    el.style.animationDelay = `${i * 0.02}s`;
+  });
+}
+
+function esc(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Init
+loadData();
+filtered = [...prospects];
+populateFilters();
+updateStats();
+renderContent();
+
+// Auto-save on page visibility change
+document.addEventListener('visibilitychange', () => { if (document.hidden) saveAll(); });
+
+// Keyboard shortcut: Ctrl+S to save
+document.addEventListener('keydown', e => { if ((e.ctrlKey||e.metaKey) && e.key === 's') { e.preventDefault(); saveAll(); } });
+</script>
+</body>
+</html>
