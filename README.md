@@ -17,7 +17,7 @@ To get a shareable URL you can play from any phone, enable GitHub Pages for this
 
 Areas 3 and 4 (*Ember Caverns*, *Skyspire Peaks*) show on the map as coming soon — we're building them one at a time.
 
-**UI/UX:** built like a mobile card-battler — your full-body hero stands on the battlefield facing the enemies, intents appear as speech bubbles over enemies' heads, your hand fans out in an arc at the bottom, with an energy gem, draw/discard piles and a round End Turn button around it; between fights you walk a winding node path across the chapter map and collect gold.
+**UI/UX:** modeled closely on mobile card-battler conventions — portrait phone framing, the enemy big and center-stage with its HP bar and intent bubble above it, your hero at the mid-left with a dark HP panel and status strip, a flat row of four big cards color-coded by function (red = attack, blue = defense, green = mana/draw, pink = heal), each with a white text band, a blue mana orb, a big blue READY button, draw/discard pile icons, and a gold counter top-right; between fights you walk a winding node path across the chapter map.
 
 **Graphics:** every character and enemy is an original hand-drawn vector (SVG) sprite — infinitely sharp at any resolution — with per-area animated backdrops (rolling meadow hills with drifting bubbles, dark forest with blinking fireflies), idle squish/bob/float animations, attack lunges, hit sparks, floating damage numbers and dealt-card animations. Swap any sprite in the `ART` library for your own SVG, or delete one and the game falls back to that character's emoji.
 
