@@ -30,11 +30,30 @@
     font-family: Georgia, 'Times New Roman', serif;
     overflow: hidden;
     touch-action: manipulation;
+    transition: background 1s ease;
   }
+  /* ---------- world themes ---------- */
+  body.theme-meadow { background: linear-gradient(180deg, #8fd3f4 0%, #c9ec9e 62%, #8fce6e 100%); }
+  body.theme-forest { background: linear-gradient(180deg, #0d1f1a 0%, #14342a 55%, #0e271f 100%); }
+  body::after { /* soft vignette keeps UI readable on bright themes */
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(10,8,20,.42) 100%);
+  }
+  #scenery { position: fixed; left: 0; right: 0; bottom: 0; z-index: 0; pointer-events: none; line-height: 0; }
+  #scenery svg { width: 100%; height: auto; display: block; }
+  #ambient { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+  .mote { position: absolute; border-radius: 50%; bottom: -20px; will-change: transform, opacity; }
+  .mote.bubble { background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.95), rgba(255,255,255,.25)); animation: rise linear infinite; }
+  .mote.firefly { background: radial-gradient(circle, #ffe98a, rgba(255,220,199,0)); box-shadow: 0 0 10px 3px rgba(255,233,138,.5); animation: drift ease-in-out infinite alternate, blink 2.2s ease-in-out infinite; }
+  .mote.dust { background: radial-gradient(circle, rgba(232,196,104,.9), rgba(232,196,104,0)); animation: rise linear infinite; }
+  @keyframes rise { from { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: .9; } to { transform: translateY(-110vh) translateX(30px); opacity: 0; } }
+  @keyframes drift { from { transform: translate(0, 0); } to { transform: translate(40px, -45vh); } }
+  @keyframes blink { 0%,100% { opacity: .15; } 50% { opacity: 1; } }
 
   /* ---------- screens ---------- */
-  .screen { display: none; height: 100vh; height: 100dvh; flex-direction: column; align-items: center; justify-content: center; padding: 16px; overflow-y: auto; }
-  .screen.active { display: flex; }
+  .screen { display: none; height: 100vh; height: 100dvh; flex-direction: column; align-items: center; justify-content: center; padding: 16px; overflow-y: auto; position: relative; z-index: 2; }
+  .screen.active { display: flex; animation: screenIn .45s ease both; }
+  @keyframes screenIn { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: scale(1); } }
 
   h1.game-title {
     font-size: clamp(40px, 8vw, 84px);
@@ -67,7 +86,18 @@
     background: linear-gradient(180deg, #3b2f5e, #261d40);
     color: #cfc4ea; border-color: #574a85;
   }
-  .menu-note { margin-top: 34px; color: #7e7398; font-size: 14px; max-width: 460px; text-align: center; line-height: 1.5; }
+  .menu-note { margin-top: 34px; color: #9c92b8; font-size: 14px; max-width: 460px; text-align: center; line-height: 1.5; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+
+  /* ---------- sprites (SVG art) ---------- */
+  .sprite { display: inline-block; line-height: 0; filter: drop-shadow(0 8px 10px rgba(0,0,0,.45)); will-change: transform; }
+  .sprite svg { width: 100%; height: 100%; }
+  .sprite .emoji-art { line-height: 1.1; }
+  .anim-bob    { animation: bob 2.6s ease-in-out infinite; transform-origin: 50% 100%; }
+  .anim-squish { animation: squish 1.6s ease-in-out infinite; transform-origin: 50% 100%; }
+  .anim-float  { animation: floaty 3.2s ease-in-out infinite; }
+  @keyframes bob    { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  @keyframes squish { 0%,100% { transform: scale(1.04,.94); } 50% { transform: scale(.96,1.06); } }
+  @keyframes floaty { 0%,100% { transform: translateY(-4px); } 50% { transform: translateY(6px); } }
 
   /* ---------- hero select ---------- */
   .hero-grid { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; margin-top: 26px; }
@@ -80,14 +110,14 @@
     .hero-card:hover { transform: translateY(-6px); border-color: var(--gold); box-shadow: 0 12px 30px rgba(232,196,104,.25); }
   }
   .hero-card:active { border-color: var(--gold); }
-  .hero-card .portrait { font-size: 64px; line-height: 1.2; filter: drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
+  .hero-card .sprite { width: 110px; height: 110px; }
   .hero-card h3 { color: var(--gold); margin: 8px 0 2px; font-size: 21px; }
   .hero-card .hero-title { color: #b9aed6; font-size: 13px; font-style: italic; }
   .hero-card .hero-hp { margin: 10px 0 6px; color: var(--hp); font-size: 15px; }
   .hero-card p.desc { color: #cfc4ea; font-size: 13px; line-height: 1.45; min-height: 56px; }
 
   /* ---------- map ---------- */
-  .map-panel { background: rgba(20,14,38,.6); border: 1px solid #4a3d75; border-radius: 18px; padding: 30px 40px; text-align: center; max-width: 720px; }
+  .map-panel { background: rgba(20,14,38,.78); border: 1px solid #4a3d75; border-radius: 18px; padding: 30px 40px; text-align: center; max-width: 720px; backdrop-filter: blur(3px); }
   .map-title { color: var(--gold); font-size: 30px; letter-spacing: 2px; }
   .map-sub { color: #b9aed6; font-style: italic; margin: 6px 0 24px; }
   .node-row { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 26px; flex-wrap: wrap; }
@@ -103,16 +133,17 @@
   .node-link { width: 26px; height: 2px; background: #4a3d75; }
   @keyframes pulse { 0%,100% { box-shadow: 0 0 14px rgba(232,196,104,.35);} 50% { box-shadow: 0 0 30px rgba(232,196,104,.65);} }
   .locked-levels { display: flex; gap: 14px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
-  .locked-level { border: 1px dashed #4a3d75; border-radius: 12px; padding: 10px 18px; color: #6f6390; font-size: 13px; }
+  .locked-level { border: 1px dashed #4a3d75; border-radius: 12px; padding: 10px 18px; color: #8d80b5; font-size: 13px; }
+  .locked-level.cleared { border-style: solid; border-color: #4f8a4f; color: #7fd07f; }
   .run-stats { color: #cfc4ea; margin-bottom: 18px; font-size: 16px; }
   .run-stats b { color: var(--gold); }
 
   /* ---------- battle layout ---------- */
-  #battle { justify-content: space-between; padding: 0; }
+  #screen-battle { justify-content: space-between; padding: 0; }
   .battle-top {
     width: 100%; display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 22px; background: rgba(10,7,20,.55); border-bottom: 1px solid #3a2f60;
-    font-size: 15px; color: #b9aed6;
+    padding: 12px 22px; background: rgba(10,7,20,.6); border-bottom: 1px solid rgba(90,70,140,.5);
+    font-size: 15px; color: #b9aed6; backdrop-filter: blur(3px);
   }
   .battle-top .bname { color: var(--gold); letter-spacing: 1px; font-size: 17px; }
   .pile-info span { margin-left: 16px; }
@@ -122,60 +153,75 @@
     text-align: center; cursor: default; position: relative; padding: 10px 14px;
     border-radius: 14px; border: 2px solid transparent; transition: border-color .15s, transform .1s; min-width: 130px;
   }
-  .enemy.targetable { border-color: var(--gold); cursor: pointer; animation: pulse 1.4s infinite; }
+  .enemy.targetable { border-color: var(--gold); cursor: pointer; animation: pulse 1.4s infinite; background: rgba(232,196,104,.07); }
   @media (hover: hover) {
     .enemy.targetable:hover { transform: scale(1.06); }
   }
-  .enemy .sprite { font-size: 64px; filter: drop-shadow(0 6px 12px rgba(0,0,0,.7)); transition: transform .1s; }
-  .enemy.boss .sprite { font-size: 92px; }
-  .enemy.hit .sprite { animation: shake .35s; }
+  .enemy .sprite { width: 92px; height: 92px; }
+  .enemy.boss .sprite { width: 150px; height: 150px; }
+  .enemy.hit .sprite { animation: shake .35s; filter: drop-shadow(0 8px 10px rgba(0,0,0,.45)) brightness(1.9) saturate(.6); }
+  .enemy.lunge .sprite { animation: lunge .4s ease; }
   @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-9px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(4px)} }
-  .enemy .ename { font-size: 14px; color: #e7ddc4; margin-top: 2px; }
-  .intent { font-size: 14px; color: #f0b8b8; height: 22px; margin-bottom: 2px; font-family: sans-serif; }
+  @keyframes lunge { 0%{transform:translate(0,0)} 35%{transform:translate(-16px,12px) scale(1.06)} 100%{transform:translate(0,0)} }
+  .enemy.dead .sprite { opacity: .25; filter: grayscale(1); transform: scaleY(.5); transform-origin: bottom; transition: all .5s ease; }
+  .enemy .ename { font-size: 14px; color: #fff; margin-top: 2px; text-shadow: 0 1px 3px rgba(0,0,0,.8); }
+  .intent { font-size: 14px; color: #ffc9c9; height: 22px; margin-bottom: 2px; font-family: sans-serif; text-shadow: 0 1px 3px rgba(0,0,0,.85); font-weight: bold; }
 
   .hpbar { width: 120px; height: 12px; background: #34122b; border: 1px solid #000; border-radius: 7px; margin: 4px auto 0; overflow: hidden; position: relative; }
-  .hpbar .fill { height: 100%; background: linear-gradient(180deg,#f06a6a,#b22a2a); transition: width .25s; }
+  .hpbar .fill { height: 100%; background: linear-gradient(180deg,#f06a6a,#b22a2a); transition: width .35s cubic-bezier(.2,.8,.3,1); }
   .hpbar .hptext { position: absolute; inset: 0; font-size: 9px; font-family: sans-serif; color: #fff; display:flex; align-items:center; justify-content:center; text-shadow: 0 1px 2px #000; }
   .status-row { height: 20px; margin-top: 4px; font-size: 12px; font-family: sans-serif; }
-  .chip { display: inline-block; background: rgba(0,0,0,.45); border-radius: 9px; padding: 1px 7px; margin: 0 2px; color: #ffd9a0; }
+  .chip { display: inline-block; background: rgba(0,0,0,.55); border-radius: 9px; padding: 1px 7px; margin: 0 2px; color: #ffd9a0; }
 
   .player-row {
     width: 100%; display: flex; align-items: center; justify-content: space-between;
     padding: 6px 30px; gap: 18px;
   }
-  .hero-panel { display: flex; align-items: center; gap: 14px; position: relative; padding: 8px 12px; border-radius: 14px; }
+  .hero-panel { display: flex; align-items: center; gap: 14px; position: relative; padding: 8px 12px; border-radius: 14px; background: rgba(10,7,20,.45); }
   .hero-panel.hit { animation: shake .35s; }
-  .hero-panel .sprite { font-size: 58px; filter: drop-shadow(0 5px 10px rgba(0,0,0,.7)); }
-  .hero-panel .pname { color: var(--gold); font-size: 16px; }
-  .block-badge { color: var(--block); font-family: sans-serif; font-size: 13px; margin-left: 6px; }
+  .hero-panel .sprite { width: 68px; height: 68px; }
+  .hero-panel .pname { color: var(--gold); font-size: 16px; text-shadow: 0 1px 3px rgba(0,0,0,.7); }
+  .block-badge { color: #9fd0ff; font-family: sans-serif; font-size: 13px; margin-left: 6px; }
 
   .energy-orb {
     width: 72px; height: 72px; border-radius: 50%; flex-shrink: 0;
     background: radial-gradient(circle at 35% 30%, #ffe9a8, #d99c1e 60%, #7a5208);
     border: 2px solid #8a6a1d; display: flex; align-items: center; justify-content: center;
     font-size: 26px; color: #2a1d04; font-weight: bold; box-shadow: 0 0 24px rgba(245,197,66,.45);
-    font-family: sans-serif;
+    font-family: sans-serif; transition: box-shadow .3s;
   }
+  .energy-orb.spent { box-shadow: 0 0 6px rgba(245,197,66,.2); filter: saturate(.5) brightness(.8); }
 
   /* ---------- hand ---------- */
   .hand { display: flex; justify-content: center; align-items: flex-end; gap: 8px; width: 100%; min-height: 210px; padding: 4px 10px 14px; flex-wrap: nowrap; }
   .card {
     width: 132px; height: 188px; border-radius: 12px; position: relative; flex-shrink: 1;
     background: linear-gradient(180deg, #34295a 0%, #221a35 100%);
-    border: 2px solid var(--common); cursor: pointer;
-    transition: transform .14s, box-shadow .14s; text-align: center; padding: 8px 7px;
+    border: 2px solid var(--common); cursor: pointer; overflow: hidden;
+    transition: transform .16s cubic-bezier(.2,.8,.3,1.2), box-shadow .16s; text-align: center; padding: 8px 7px;
     box-shadow: 0 6px 14px rgba(0,0,0,.55);
+    will-change: transform;
+  }
+  .card::before { /* glossy sheen */
+    content: ""; position: absolute; top: 0; left: -80%; width: 60%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.13), transparent);
+    transform: skewX(-20deg); pointer-events: none;
   }
   .card.uncommon { border-color: var(--uncommon); }
   .card.rare { border-color: var(--rare); box-shadow: 0 6px 18px rgba(232,196,104,.3); }
+  .card.glow { box-shadow: 0 0 14px rgba(245,197,66,.35), 0 6px 14px rgba(0,0,0,.55); }
   @media (hover: hover) {
     .card:hover { transform: translateY(-26px) scale(1.07); z-index: 5; box-shadow: 0 14px 30px rgba(0,0,0,.7); }
+    .card:hover::before { animation: sheen .7s ease; }
     .card.unplayable:hover { transform: none; }
     .card.mini:hover { transform: none; }
     .reward-cards .card:hover { transform: translateY(-14px) scale(1.08); }
   }
+  @keyframes sheen { from { left: -80%; } to { left: 120%; } }
   .card.unplayable { filter: grayscale(.7) brightness(.65); cursor: default; }
   .card.selected { transform: translateY(-30px) scale(1.1); border-color: #fff; z-index: 6; }
+  .card.dealt { animation: dealIn .3s cubic-bezier(.2,.8,.3,1.1) both; }
+  @keyframes dealIn { from { opacity: 0; transform: translateY(46px) rotate(4deg); } to { opacity: 1; transform: translateY(0) rotate(0); } }
   .card .cost {
     position: absolute; top: -10px; left: -10px; width: 32px; height: 32px; border-radius: 50%;
     background: radial-gradient(circle at 35% 30%, #ffe9a8, #d99c1e 65%, #7a5208);
@@ -191,7 +237,7 @@
   .card.mini .cname { font-size: 11px; }
   .card.mini .ctext { font-size: 9.5px; }
 
-  .center-msg { min-height: 26px; color: var(--gold); font-style: italic; text-align: center; font-size: 16px; }
+  .center-msg { min-height: 26px; color: var(--gold); font-style: italic; text-align: center; font-size: 16px; text-shadow: 0 1px 4px rgba(0,0,0,.8); }
 
   /* turn banner */
   .turn-banner {
@@ -202,7 +248,7 @@
   .turn-banner.show { animation: bannerIn 1.1s ease forwards; }
   @keyframes bannerIn { 0%{opacity:0; transform:translate(-50%,-50%) scale(.7)} 20%{opacity:1; transform:translate(-50%,-50%) scale(1)} 80%{opacity:1} 100%{opacity:0} }
 
-  /* floating combat text */
+  /* floating combat text + hit sparks */
   .float-text {
     position: fixed; pointer-events: none; font-weight: bold; font-family: sans-serif;
     font-size: 26px; z-index: 70; text-shadow: 0 2px 4px #000; animation: floatUp 1s ease-out forwards;
@@ -210,14 +256,20 @@
   @keyframes floatUp { 0%{opacity:1; transform:translateY(0)} 100%{opacity:0; transform:translateY(-56px)} }
   .float-text.dmg { color: #ff8a7a; } .float-text.blk { color: var(--block); }
   .float-text.heal { color: #8ae08a; } .float-text.stat { color: #ffd9a0; font-size: 18px; }
+  .spark {
+    position: fixed; width: 8px; height: 8px; border-radius: 50%; pointer-events: none; z-index: 69;
+    animation: sparkFly .55s ease-out forwards;
+  }
+  @keyframes sparkFly { from { opacity: 1; transform: translate(0,0) scale(1); } to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.3); } }
 
   /* ---------- reward / end screens ---------- */
-  .reward-panel { text-align: center; }
+  .reward-panel { text-align: center; background: rgba(20,14,38,.72); border-radius: 20px; padding: 30px 36px; backdrop-filter: blur(3px); }
   .reward-panel h2 { color: var(--gold); font-size: 38px; letter-spacing: 3px; }
   .reward-panel .rsub { color: #b9aed6; margin: 8px 0 26px; font-style: italic; }
   .reward-cards { display: flex; gap: 20px; justify-content: center; margin-bottom: 28px; flex-wrap: wrap; }
   .reward-cards .card { cursor: pointer; }
   .end-emoji { font-size: 90px; margin-bottom: 10px; }
+  .end-emoji .sprite { width: 130px; height: 130px; }
 
   /* deck modal */
   .modal-back { display: none; position: fixed; inset: 0; background: rgba(5,3,12,.85); z-index: 90; align-items: center; justify-content: center; }
@@ -235,13 +287,14 @@
 
     .enemy-row { gap: 6px; padding: 4px 6px 0; flex-wrap: wrap; align-items: flex-end; }
     .enemy { min-width: 96px; padding: 4px 6px; }
-    .enemy .sprite { font-size: 44px; } .enemy.boss .sprite { font-size: 64px; }
+    .enemy .sprite { width: 64px; height: 64px; }
+    .enemy.boss .sprite { width: 104px; height: 104px; }
     .enemy .ename { font-size: 11px; }
     .hpbar { width: 92px; }
 
     .player-row { padding: 4px 10px; gap: 8px; }
     .hero-panel { gap: 8px; padding: 4px 6px; }
-    .hero-panel .sprite { font-size: 42px; }
+    .hero-panel .sprite { width: 50px; height: 50px; }
     .hero-panel .hpbar { width: 110px !important; }
     .energy-orb { width: 54px; height: 54px; font-size: 19px; }
     #end-turn-btn { padding: 12px 16px; font-size: 14px; letter-spacing: 1px; }
@@ -269,16 +322,20 @@
     .center-msg { font-size: 14px; min-height: 22px; }
     .turn-banner { font-size: 30px; letter-spacing: 3px; }
     .float-text { font-size: 21px; }
+    .reward-panel { padding: 20px 14px; }
   }
 </style>
 </head>
 <body>
 
+<div id="scenery"></div>
+<div id="ambient"></div>
+
 <!-- ===================== MAIN MENU ===================== -->
 <div id="screen-menu" class="screen active">
   <h1 class="game-title" id="menu-title">CARD WARDENS</h1>
   <div class="subtitle" id="menu-tagline">Forge your deck. Guard the realms.</div>
-  <div class="demo-badge">DEMO &nbsp;·&nbsp; LEVEL 1</div>
+  <div class="demo-badge">DEMO &nbsp;·&nbsp; 2 AREAS</div>
   <button class="btn" onclick="goHeroSelect()">PLAY</button>
   <div class="menu-note">
     Every hero, card, enemy and level in this game lives in the
@@ -349,17 +406,13 @@
   </div>
 </div>
 
-<!-- ===================== VICTORY ===================== -->
+<!-- ===================== AREA CLEAR / VICTORY ===================== -->
 <div id="screen-victory" class="screen">
   <div class="reward-panel">
-    <div class="end-emoji">🏆</div>
-    <h2>LEVEL COMPLETE!</h2>
+    <div class="end-emoji" id="victory-emoji">🏆</div>
+    <h2 id="victory-title">AREA CLEAR!</h2>
     <div class="rsub" id="victory-sub"></div>
-    <div class="menu-note" style="margin-top:8px;">More levels coming soon — add them to the LEVELS list in the GAME DATA section!</div>
-    <div style="margin-top:24px;">
-      <button class="btn" onclick="goHeroSelect()">PLAY AGAIN</button>
-      <button class="btn secondary" onclick="showScreen('screen-menu')" style="margin-left:10px;">Menu</button>
-    </div>
+    <div id="victory-buttons" style="margin-top:24px;"></div>
   </div>
 </div>
 
@@ -380,7 +433,7 @@
  *                                                                     *
  *   ██████  GAME DATA — EDIT EVERYTHING BELOW  ██████                 *
  *                                                                     *
- *   This section is the whole game. Change names, numbers, emoji,    *
+ *   This section is the whole game. Change names, numbers, art,      *
  *   add cards, heroes, enemies and levels — no engine knowledge      *
  *   needed. The engine below just reads this data.                   *
  *                                                                     *
@@ -395,7 +448,212 @@ const CONFIG = {
   rewardChoices: 3,        // cards offered after winning a battle
   skipRewardHeal: 6,       // HP healed if you skip the card reward
   healAfterBattle: 5,      // HP automatically healed after every battle
+  healBetweenAreas: 0.35,  // fraction of max HP restored when an area is cleared
   rewardRarityWeights: { common: 60, uncommon: 30, rare: 10 },
+};
+
+/* ---------------- ART LIBRARY (original vector sprites) -------------
+ * Each entry is an SVG drawing. They scale to any size with zero
+ * blur. Swap any of them for your own SVG — or delete one and the
+ * game falls back to the character's emoji automatically.
+ * ------------------------------------------------------------------ */
+const ART = {
+  /* ---- Wardens ---- */
+  kaela: `<svg viewBox="0 0 100 100"><defs>
+    <radialGradient id="kmane" cx="50%" cy="42%"><stop offset="0%" stop-color="#ffb347"/><stop offset="70%" stop-color="#f07f1f"/><stop offset="100%" stop-color="#c2570e"/></radialGradient>
+    <linearGradient id="karm" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8c468"/><stop offset="100%" stop-color="#a8732a"/></linearGradient></defs>
+    <path d="M50 6 L58 18 L70 10 L72 25 L86 22 L81 37 L94 42 L82 51 L90 64 L75 64 L76 78 L63 71 L57 84 L50 73 L43 84 L37 71 L24 78 L25 64 L10 64 L18 51 L6 42 L19 37 L14 22 L28 25 L30 10 L42 18 Z" fill="url(#kmane)" stroke="#8e3d05" stroke-width="2.5"/>
+    <circle cx="50" cy="47" r="24" fill="#f6d7a0" stroke="#9c6b2e" stroke-width="2.5"/>
+    <path d="M30 44 Q33 30 46 28 Q40 36 39 46 Z" fill="#e8b97e"/><path d="M70 44 Q67 30 54 28 Q60 36 61 46 Z" fill="#e8b97e"/>
+    <circle cx="41" cy="45" r="4.4" fill="#43230a"/><circle cx="59" cy="45" r="4.4" fill="#43230a"/>
+    <circle cx="42.5" cy="43.5" r="1.5" fill="#fff"/><circle cx="60.5" cy="43.5" r="1.5" fill="#fff"/>
+    <path d="M36 38 L45 41" stroke="#43230a" stroke-width="2.4" stroke-linecap="round"/><path d="M64 38 L55 41" stroke="#43230a" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M46 54 Q50 58 54 54 L50 60 Z" fill="#b0571d"/>
+    <path d="M44 62 Q50 67 56 62" stroke="#43230a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M26 78 Q50 92 74 78 L74 100 L26 100 Z" fill="url(#karm)" stroke="#7a5208" stroke-width="2.5"/>
+    <path d="M44 84 L50 92 L56 84 L50 80 Z" fill="#d8401f" stroke="#7a1f08" stroke-width="2"/></svg>`,
+
+  thorn: `<svg viewBox="0 0 100 100"><defs>
+    <radialGradient id="tbody" cx="50%" cy="35%"><stop offset="0%" stop-color="#9b7653"/><stop offset="100%" stop-color="#5d4226"/></radialGradient>
+    <linearGradient id="tleaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7fce5e"/><stop offset="100%" stop-color="#36842c"/></linearGradient></defs>
+    <ellipse cx="50" cy="58" rx="34" ry="38" fill="url(#tbody)" stroke="#3a2a16" stroke-width="2.5"/>
+    <path d="M22 36 Q14 18 30 12 Q32 26 40 30 Z" fill="url(#tleaf)" stroke="#235c1c" stroke-width="2"/>
+    <path d="M78 36 Q86 18 70 12 Q68 26 60 30 Z" fill="url(#tleaf)" stroke="#235c1c" stroke-width="2"/>
+    <path d="M34 16 Q50 4 66 16 Q58 26 50 26 Q42 26 34 16 Z" fill="url(#tleaf)" stroke="#235c1c" stroke-width="2"/>
+    <circle cx="38" cy="46" r="13" fill="#f3e2b8" stroke="#3a2a16" stroke-width="2.5"/>
+    <circle cx="62" cy="46" r="13" fill="#f3e2b8" stroke="#3a2a16" stroke-width="2.5"/>
+    <circle cx="39" cy="47" r="6.5" fill="#d88f1e"/><circle cx="61" cy="47" r="6.5" fill="#d88f1e"/>
+    <circle cx="39" cy="47" r="3.2" fill="#2a1c08"/><circle cx="61" cy="47" r="3.2" fill="#2a1c08"/>
+    <circle cx="40.5" cy="45.2" r="1.4" fill="#fff"/><circle cx="62.5" cy="45.2" r="1.4" fill="#fff"/>
+    <path d="M50 52 L45 62 L55 62 Z" fill="#e8a23a" stroke="#9c6410" stroke-width="2"/>
+    <path d="M36 70 Q40 78 46 72 Q50 80 54 72 Q60 78 64 70" stroke="#3a2a16" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M50 86 Q44 92 47 98 L53 98 Q56 92 50 86 Z" fill="url(#tleaf)" stroke="#235c1c" stroke-width="2"/></svg>`,
+
+  zyra: `<svg viewBox="0 0 100 100"><defs>
+    <radialGradient id="zhead" cx="45%" cy="35%"><stop offset="0%" stop-color="#6fe3d6"/><stop offset="100%" stop-color="#1f8f96"/></radialGradient>
+    <linearGradient id="zfin" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#bff2ff"/><stop offset="100%" stop-color="#3fb6c9"/></linearGradient></defs>
+    <path d="M50 14 L42 2 L48 12 L50 4 L52 12 L58 2 Z" fill="#ffe14d" stroke="#c79a08" stroke-width="1.6"/>
+    <path d="M30 26 Q14 22 8 34 Q20 36 26 42 Z" fill="url(#zfin)" stroke="#15616e" stroke-width="2"/>
+    <path d="M70 26 Q86 22 92 34 Q80 36 74 42 Z" fill="url(#zfin)" stroke="#15616e" stroke-width="2"/>
+    <path d="M50 12 Q78 16 80 48 Q82 74 64 82 L36 82 Q18 74 20 48 Q22 16 50 12 Z" fill="url(#zhead)" stroke="#0e4f58" stroke-width="2.6"/>
+    <path d="M32 60 Q26 70 32 80 Q40 74 44 66 Z" fill="#bff2ff" opacity=".5"/>
+    <circle cx="38" cy="44" r="6" fill="#0e2b30"/><circle cx="62" cy="44" r="6" fill="#0e2b30"/>
+    <circle cx="40" cy="42" r="2.2" fill="#fff"/><circle cx="64" cy="42" r="2.2" fill="#fff"/>
+    <path d="M33 35 L43 38" stroke="#0e2b30" stroke-width="2.4" stroke-linecap="round"/><path d="M67 35 L57 38" stroke="#0e2b30" stroke-width="2.4" stroke-linecap="round"/>
+    <ellipse cx="50" cy="62" rx="14" ry="10" fill="#d8fbef" stroke="#0e4f58" stroke-width="2"/>
+    <circle cx="45" cy="59" r="1.8" fill="#0e4f58"/><circle cx="55" cy="59" r="1.8" fill="#0e4f58"/>
+    <path d="M42 68 Q50 73 58 68" stroke="#0e4f58" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <path d="M55 22 L48 32 L54 32 L47 43 L58 30 L52 30 Z" fill="#ffe14d" stroke="#c79a08" stroke-width="1.4"/></svg>`,
+
+  /* ---- Slimes (Area 1) ---- */
+  slime_green: `<svg viewBox="0 0 100 100"><defs>
+    <radialGradient id="slg" cx="35%" cy="28%"><stop offset="0%" stop-color="#c8f88e"/><stop offset="55%" stop-color="#74d83c"/><stop offset="100%" stop-color="#3da81e"/></radialGradient></defs>
+    <path d="M50 16 C76 16 89 44 87 64 C85 82 70 91 50 91 C30 91 15 82 13 64 C11 44 24 16 50 16 Z" fill="url(#slg)" stroke="#256e10" stroke-width="3"/>
+    <ellipse cx="33" cy="32" rx="13" ry="8" fill="#eaffd0" opacity=".8" transform="rotate(-18 33 32)"/>
+    <circle cx="38" cy="54" r="6.5" fill="#173a08"/><circle cx="62" cy="54" r="6.5" fill="#173a08"/>
+    <circle cx="40" cy="52" r="2.3" fill="#fff"/><circle cx="64" cy="52" r="2.3" fill="#fff"/>
+    <path d="M41 68 Q50 76 59 68" stroke="#173a08" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="26" cy="64" rx="5" ry="3.4" fill="#ff9d9d" opacity=".5"/><ellipse cx="74" cy="64" rx="5" ry="3.4" fill="#ff9d9d" opacity=".5"/></svg>`,
+
+  slime_blue: `<svg viewBox="0 0 100 100"><defs>
+    <radialGradient id="slb" cx="35%" cy="28%"><stop offset="0%" stop-color="#9fdcff"/><stop offset="55%" stop-color="#4da4ee"/><stop offset="100%" stop-color="#2268b8"/></radialGradient></defs>
+    <path d="M50 16 C76 16 89 44 87 64 C85 82 70 91 50 91 C30 91 15 82 13 64 C11 44 24 16 50 16 Z" fill="url(#slb)" stroke="#14467e" stroke-width="3"/>
+    <ellipse cx="33" cy="32" rx="13" ry="8" fill="#dff3ff" opacity=".85" transform="rotate(-18 33 32)"/>
+    <path d="M50 34 L41 50 L47 50 L43 62 L59 46 L52 46 L58 34 Z" fill="#eaf8ff" opacity=".55"/>
+    <circle cx="37" cy="55" r="6" fill="#0c2a4e"/><circle cx="63" cy="55" r="6" fill="#0c2a4e"/>
+    <circle cx="39" cy="53" r="2.2" fill="#fff"/><circle cx="65" cy="53" r="2.2" fill="#fff"/>
+    <path d="M43 70 Q50 65 57 70" stroke="#0c2a4e" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+
+  slime_spark: `<svg viewBox="0 0 100 100"><defs>
+    <radialGradient id="sls" cx="35%" cy="28%"><stop offset="0%" stop-color="#fff3a8"/><stop offset="55%" stop-color="#ffd23e"/><stop offset="100%" stop-color="#e09a10"/></radialGradient></defs>
+    <path d="M30 22 L36 10 L42 20 L50 8 L58 20 L64 10 L70 22 Z" fill="#ffe87a" stroke="#b87f08" stroke-width="2.4"/>
+    <path d="M50 18 C76 18 89 45 87 64 C85 82 70 91 50 91 C30 91 15 82 13 64 C11 45 24 18 50 18 Z" fill="url(#sls)" stroke="#b87f08" stroke-width="3"/>
+    <ellipse cx="33" cy="34" rx="12" ry="7.4" fill="#fffbe0" opacity=".85" transform="rotate(-18 33 34)"/>
+    <path d="M54 36 L45 52 L51 52 L46 66 L63 48 L56 48 L62 36 Z" fill="#fff" stroke="#d99c1e" stroke-width="1.6"/>
+    <circle cx="35" cy="55" r="6" fill="#5e3c02"/><circle cx="68" cy="55" r="6" fill="#5e3c02"/>
+    <circle cx="37" cy="53" r="2.2" fill="#fff"/><circle cx="70" cy="53" r="2.2" fill="#fff"/>
+    <path d="M42 72 Q50 78 58 72" stroke="#5e3c02" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+
+  slime_pink: `<svg viewBox="0 0 100 100"><defs>
+    <radialGradient id="slp" cx="35%" cy="28%"><stop offset="0%" stop-color="#ffd3e8"/><stop offset="55%" stop-color="#f48ab8"/><stop offset="100%" stop-color="#d04a86"/></radialGradient></defs>
+    <path d="M50 16 C76 16 89 44 87 64 C85 82 70 91 50 91 C30 91 15 82 13 64 C11 44 24 16 50 16 Z" fill="url(#slp)" stroke="#9c2c5e" stroke-width="3"/>
+    <ellipse cx="33" cy="32" rx="13" ry="8" fill="#ffeaf4" opacity=".85" transform="rotate(-18 33 32)"/>
+    <path d="M60 28 C64 22 74 24 74 31 C74 37 66 42 62 44 C58 42 50 37 50 31 C50 24 56 22 60 28 Z" fill="#ff5a8a" stroke="#9c2c5e" stroke-width="1.8"/>
+    <path d="M33 52 Q38 47 43 52 M57 52 Q62 47 67 52" stroke="#5e1232" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+    <path d="M42 66 Q50 74 58 66" stroke="#5e1232" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="28" cy="60" rx="5.5" ry="3.6" fill="#ff8ab0" opacity=".85"/><ellipse cx="72" cy="60" rx="5.5" ry="3.6" fill="#ff8ab0" opacity=".85"/></svg>`,
+
+  slime_king: `<svg viewBox="0 0 100 100"><defs>
+    <radialGradient id="slk" cx="35%" cy="28%"><stop offset="0%" stop-color="#e2b8ff"/><stop offset="55%" stop-color="#a256e0"/><stop offset="100%" stop-color="#6a23a8"/></radialGradient>
+    <linearGradient id="slkc" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe9a8"/><stop offset="100%" stop-color="#d99c1e"/></linearGradient></defs>
+    <path d="M50 20 C78 20 91 46 89 66 C87 84 71 93 50 93 C29 93 13 84 11 66 C9 46 22 20 50 20 Z" fill="url(#slk)" stroke="#451478" stroke-width="3"/>
+    <path d="M30 22 L30 6 L40 16 L50 4 L60 16 L70 6 L70 22 Q50 14 30 22 Z" fill="url(#slkc)" stroke="#8a6a1d" stroke-width="2.4"/>
+    <circle cx="34" cy="9" r="3" fill="#e84f6b"/><circle cx="50" cy="7" r="3" fill="#4fa8e8"/><circle cx="66" cy="9" r="3" fill="#5ed85e"/>
+    <ellipse cx="32" cy="36" rx="13" ry="8" fill="#f3dcff" opacity=".8" transform="rotate(-18 32 36)"/>
+    <circle cx="37" cy="56" r="7" fill="#2a0a4e"/><circle cx="63" cy="56" r="7" fill="#2a0a4e"/>
+    <circle cx="39" cy="54" r="2.4" fill="#fff"/><circle cx="65" cy="54" r="2.4" fill="#fff"/>
+    <path d="M34 50 L43 52" stroke="#2a0a4e" stroke-width="2.6" stroke-linecap="round"/><path d="M66 50 L57 52" stroke="#2a0a4e" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M40 72 Q50 80 60 72" stroke="#2a0a4e" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+    <circle cx="73" cy="40" r="4.5" fill="#caa0ee" opacity=".7"/><circle cx="22" cy="55" r="3.4" fill="#caa0ee" opacity=".7"/></svg>`,
+
+  /* ---- Forest dwellers (Area 2) ---- */
+  gloomcap: `<svg viewBox="0 0 100 100"><defs>
+    <radialGradient id="gcap" cx="42%" cy="30%"><stop offset="0%" stop-color="#c977d8"/><stop offset="100%" stop-color="#6e2f8a"/></radialGradient></defs>
+    <path d="M40 60 Q38 88 42 92 L58 92 Q62 88 60 60 Z" fill="#e8dcc0" stroke="#7a6a48" stroke-width="2.6"/>
+    <path d="M12 56 Q14 22 50 18 Q86 22 88 56 Q70 64 50 64 Q30 64 12 56 Z" fill="url(#gcap)" stroke="#3f1456" stroke-width="3"/>
+    <circle cx="32" cy="38" r="6" fill="#e9c8f2" opacity=".9"/><circle cx="58" cy="30" r="4.6" fill="#e9c8f2" opacity=".9"/><circle cx="72" cy="44" r="5" fill="#e9c8f2" opacity=".9"/>
+    <circle cx="44" cy="76" r="4" fill="#33215c"/><circle cx="56" cy="76" r="4" fill="#33215c"/>
+    <circle cx="45.4" cy="74.6" r="1.4" fill="#fff"/><circle cx="57.4" cy="74.6" r="1.4" fill="#fff"/>
+    <path d="M46 85 Q50 88 54 85" stroke="#33215c" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>`,
+
+  croaker: `<svg viewBox="0 0 100 100"><defs>
+    <radialGradient id="frg" cx="45%" cy="35%"><stop offset="0%" stop-color="#9bd86a"/><stop offset="100%" stop-color="#4a8a2c"/></radialGradient></defs>
+    <circle cx="30" cy="26" r="14" fill="url(#frg)" stroke="#2c5618" stroke-width="2.8"/>
+    <circle cx="70" cy="26" r="14" fill="url(#frg)" stroke="#2c5618" stroke-width="2.8"/>
+    <circle cx="30" cy="25" r="7.5" fill="#fff8d8"/><circle cx="70" cy="25" r="7.5" fill="#fff8d8"/>
+    <circle cx="30" cy="26" r="3.6" fill="#1d2e0c"/><circle cx="70" cy="26" r="3.6" fill="#1d2e0c"/>
+    <path d="M14 56 Q14 30 50 30 Q86 30 86 56 Q86 84 50 86 Q14 84 14 56 Z" fill="url(#frg)" stroke="#2c5618" stroke-width="3"/>
+    <ellipse cx="50" cy="68" rx="24" ry="15" fill="#e9f5c8"/>
+    <path d="M28 52 Q50 66 72 52" stroke="#1d2e0c" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="22" cy="58" rx="5" ry="3.6" fill="#ff9d9d" opacity=".6"/><ellipse cx="78" cy="58" rx="5" ry="3.6" fill="#ff9d9d" opacity=".6"/>
+    <path d="M20 86 Q12 78 16 70 Q24 76 30 78 Z" fill="url(#frg)" stroke="#2c5618" stroke-width="2.2"/>
+    <path d="M80 86 Q88 78 84 70 Q76 76 70 78 Z" fill="url(#frg)" stroke="#2c5618" stroke-width="2.2"/></svg>`,
+
+  imp: `<svg viewBox="0 0 100 100"><defs>
+    <radialGradient id="impg" cx="45%" cy="35%"><stop offset="0%" stop-color="#b985e0"/><stop offset="100%" stop-color="#67309c"/></radialGradient></defs>
+    <path d="M28 30 Q18 8 34 8 Q38 20 42 26 Z" fill="url(#impg)" stroke="#3a1460" stroke-width="2.6"/>
+    <path d="M72 30 Q82 8 66 8 Q62 20 58 26 Z" fill="url(#impg)" stroke="#3a1460" stroke-width="2.6"/>
+    <circle cx="50" cy="50" r="30" fill="url(#impg)" stroke="#3a1460" stroke-width="3"/>
+    <path d="M36 44 L46 49" stroke="#1d0a33" stroke-width="2.6" stroke-linecap="round"/><path d="M64 44 L54 49" stroke="#1d0a33" stroke-width="2.6" stroke-linecap="round"/>
+    <circle cx="40" cy="52" r="5" fill="#ffe14d"/><circle cx="60" cy="52" r="5" fill="#ffe14d"/>
+    <circle cx="40" cy="52" r="2.4" fill="#1d0a33"/><circle cx="60" cy="52" r="2.4" fill="#1d0a33"/>
+    <path d="M38 66 Q44 73 50 66 Q56 73 62 66" stroke="#1d0a33" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <path d="M44 67 L46 72 L48 67 Z" fill="#fff"/><path d="M52 67 L54 72 L56 67 Z" fill="#fff"/>
+    <path d="M76 62 Q92 66 88 82 Q84 72 74 72 Z" fill="url(#impg)" stroke="#3a1460" stroke-width="2.4"/></svg>`,
+
+  beast: `<svg viewBox="0 0 100 100"><defs>
+    <radialGradient id="bstg" cx="45%" cy="35%"><stop offset="0%" stop-color="#a8784e"/><stop offset="100%" stop-color="#5e3a1c"/></radialGradient></defs>
+    <path d="M22 30 Q10 14 26 12 Q32 22 36 26 Z" fill="#7a5230" stroke="#33200e" stroke-width="2.6"/>
+    <path d="M78 30 Q90 14 74 12 Q68 22 64 26 Z" fill="#7a5230" stroke="#33200e" stroke-width="2.6"/>
+    <path d="M50 14 Q82 18 84 52 Q86 78 66 84 L34 84 Q14 78 16 52 Q18 18 50 14 Z" fill="url(#bstg)" stroke="#33200e" stroke-width="3"/>
+    <path d="M18 40 Q8 36 10 28 M82 40 Q92 36 90 28" stroke="#3e7028" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="20" cy="44" r="3.4" fill="#5ea83e"/><circle cx="80" cy="44" r="3.4" fill="#5ea83e"/>
+    <path d="M34 40 L44 45" stroke="#1d1206" stroke-width="3" stroke-linecap="round"/><path d="M66 40 L56 45" stroke="#1d1206" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="38" cy="50" r="4.6" fill="#e8442a"/><circle cx="62" cy="50" r="4.6" fill="#e8442a"/>
+    <circle cx="39.4" cy="48.6" r="1.6" fill="#fff"/><circle cx="63.4" cy="48.6" r="1.6" fill="#fff"/>
+    <ellipse cx="50" cy="68" rx="17" ry="12" fill="#c69a6e" stroke="#33200e" stroke-width="2.6"/>
+    <circle cx="44" cy="66" r="2.6" fill="#33200e"/><circle cx="56" cy="66" r="2.6" fill="#33200e"/>
+    <path d="M36 76 L30 86 L40 80 Z" fill="#f3ead8" stroke="#9a8a68" stroke-width="1.6"/>
+    <path d="M64 76 L70 86 L60 80 Z" fill="#f3ead8" stroke="#9a8a68" stroke-width="1.6"/></svg>`,
+
+  hollow_king: `<svg viewBox="0 0 100 100"><defs>
+    <linearGradient id="hkrobe" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3d3654"/><stop offset="100%" stop-color="#16121f"/></linearGradient>
+    <radialGradient id="hkglow" cx="50%" cy="50%"><stop offset="0%" stop-color="#7ef0c8"/><stop offset="100%" stop-color="#0e3a2c"/></radialGradient></defs>
+    <path d="M30 26 L30 8 L40 18 L50 6 L60 18 L70 8 L70 26 Z" fill="#c9a23a" stroke="#6e5510" stroke-width="2.4"/>
+    <path d="M28 30 Q50 18 72 30 L78 92 Q64 98 50 98 Q36 98 22 92 Z" fill="url(#hkrobe)" stroke="#0c0914" stroke-width="3"/>
+    <path d="M22 92 L28 78 L33 94 M78 92 L72 78 L67 94" fill="#16121f" stroke="#0c0914" stroke-width="2"/>
+    <ellipse cx="50" cy="40" rx="17" ry="14" fill="#0c0914"/>
+    <circle cx="43" cy="38" r="4" fill="#7ef0c8"><animate attributeName="opacity" values="1;.4;1" dur="2.4s" repeatCount="indefinite"/></circle>
+    <circle cx="57" cy="38" r="4" fill="#7ef0c8"><animate attributeName="opacity" values="1;.4;1" dur="2.4s" repeatCount="indefinite"/></circle>
+    <circle cx="50" cy="66" r="11" fill="url(#hkglow)" opacity=".95"><animate attributeName="r" values="11;12.5;11" dur="3s" repeatCount="indefinite"/></circle>
+    <circle cx="50" cy="66" r="14" fill="none" stroke="#7ef0c8" stroke-width="1.6" opacity=".5"/>
+    <path d="M34 52 Q30 64 34 78 M66 52 Q70 64 66 78" stroke="#564b78" stroke-width="2.4" fill="none"/></svg>`,
+};
+
+/* ---------------- WORLD THEMES (per-area backdrops) ----------------
+ * sky:      body background class (defined in the CSS up top)
+ * particle: "bubble" | "firefly" | "dust"
+ * scenery:  SVG strip pinned to the bottom of the screen
+ * ------------------------------------------------------------------ */
+const THEMES = {
+  void: { sky: "", particle: "dust", scenery: "" },
+  meadow: {
+    sky: "theme-meadow", particle: "bubble",
+    scenery: `<svg viewBox="0 0 1000 240" preserveAspectRatio="none">
+      <circle cx="850" cy="40" r="55" fill="#fff6c8" opacity=".9"/>
+      <ellipse cx="160" cy="60" rx="70" ry="22" fill="#ffffff" opacity=".75"/><ellipse cx="225" cy="52" rx="45" ry="17" fill="#ffffff" opacity=".75"/>
+      <ellipse cx="560" cy="36" rx="60" ry="18" fill="#ffffff" opacity=".6"/>
+      <path d="M0 150 Q250 70 500 140 T1000 130 L1000 240 L0 240 Z" fill="#7cc452" opacity=".85"/>
+      <path d="M0 190 Q300 130 600 185 T1000 180 L1000 240 L0 240 Z" fill="#5da83c"/>
+      <ellipse cx="120" cy="208" rx="26" ry="20" fill="#8ee06a" opacity=".8"/><ellipse cx="120" cy="196" rx="12" ry="10" fill="#aef08a" opacity=".9"/>
+      <ellipse cx="880" cy="214" rx="30" ry="22" fill="#8ee06a" opacity=".8"/><ellipse cx="880" cy="200" rx="14" ry="11" fill="#aef08a" opacity=".9"/>
+      <circle cx="300" cy="205" r="5" fill="#ff8ab0"/><circle cx="320" cy="215" r="4" fill="#ffd23e"/><circle cx="700" cy="210" r="5" fill="#ff8ab0"/><circle cx="660" cy="218" r="4" fill="#ffd23e"/>
+    </svg>`,
+  },
+  forest: {
+    sky: "theme-forest", particle: "firefly",
+    scenery: `<svg viewBox="0 0 1000 260" preserveAspectRatio="none">
+      <circle cx="170" cy="50" r="38" fill="#cfe8d8" opacity=".25"/>
+      <path d="M60 260 L60 110 L30 130 L70 60 L45 75 L90 10 L135 75 L110 60 L150 130 L120 110 L120 260 Z" fill="#0b2018" opacity=".9"/>
+      <path d="M880 260 L880 120 L850 140 L890 70 L865 85 L910 25 L955 85 L930 70 L970 140 L940 120 L940 260 Z" fill="#0b2018" opacity=".9"/>
+      <path d="M300 260 L300 140 L275 158 L312 95 L290 108 L330 50 L370 108 L348 95 L385 158 L360 140 L360 260 Z" fill="#0f2b20" opacity=".85"/>
+      <path d="M620 260 L620 150 L598 166 L632 108 L612 120 L650 65 L688 120 L668 108 L702 166 L680 150 L680 260 Z" fill="#0f2b20" opacity=".85"/>
+      <path d="M0 235 Q250 205 500 228 T1000 222 L1000 260 L0 260 Z" fill="#0a1c14"/>
+      <ellipse cx="500" cy="245" rx="500" ry="26" fill="#071510"/>
+      <circle cx="240" cy="226" r="7" fill="#3aa86e" opacity=".5"/><circle cx="256" cy="232" r="5" fill="#3aa86e" opacity=".4"/>
+      <circle cx="760" cy="230" r="7" fill="#3aa86e" opacity=".5"/><circle cx="744" cy="236" r="5" fill="#3aa86e" opacity=".4"/>
+    </svg>`,
+  },
 };
 
 /* ---------------- STATUS EFFECTS (used by cards & enemies) ----------
@@ -470,26 +728,27 @@ const CARDS = {
 };
 
 /* ---------------- HEROES (your Wardens) -----------------------------
+ * art:         key into the ART library above (falls back to emoji)
  * starterDeck: card ids you begin every run with
  * cardPool:    cards that can appear as battle rewards
  * ------------------------------------------------------------------ */
 const HEROES = {
   kaela: {
-    name: "Kaela", title: "the Flame Warden", emoji: "🦁", maxHp: 80,
+    name: "Kaela", title: "the Flame Warden", emoji: "🦁", art: "kaela", maxHp: 80,
     desc: "A fearless knight of the Ember Order. Overwhelms foes with raw fire and fury.",
     starterDeck: ["ember_slash","ember_slash","ember_slash","ember_slash","ember_slash",
                   "molten_guard","molten_guard","molten_guard","molten_guard","war_cry"],
     cardPool: ["twin_flames","ignite","molten_wall","searing_blade","flame_burst","phoenix_heart","inferno","blazing_speed"],
   },
   thorn: {
-    name: "Thorn", title: "the Grove Warden", emoji: "🦉", maxHp: 85,
+    name: "Thorn", title: "the Grove Warden", emoji: "🦉", art: "thorn", maxHp: 85,
     desc: "An ancient keeper of the deep woods. Outlasts enemies with poison, roots and regrowth.",
     starterDeck: ["thorn_whip","thorn_whip","thorn_whip","thorn_whip","thorn_whip",
                   "bark_skin","bark_skin","bark_skin","bark_skin","sap_sip"],
     cardPool: ["venom_lash","entangle","regrowth","iron_root","toxic_spores","natures_wrath","overgrowth","heartwood"],
   },
   zyra: {
-    name: "Zyra", title: "the Storm Warden", emoji: "🐉", maxHp: 75,
+    name: "Zyra", title: "the Storm Warden", emoji: "🐉", art: "zyra", maxHp: 75,
     desc: "A lightning-touched duelist. Fragile, but cycles cards and energy faster than any storm.",
     starterDeck: ["arc_jolt","arc_jolt","arc_jolt","arc_jolt","arc_jolt",
                   "static_guard","static_guard","static_guard","static_guard","spark"],
@@ -498,6 +757,8 @@ const HEROES = {
 };
 
 /* ---------------- ENEMIES -------------------------------------------
+ * art:  key into the ART library (falls back to emoji)
+ * anim: idle animation — "squish" (slimes), "bob" or "float"
  * moves: things the enemy can do —
  *   { attack: N }  / { attack: N, hits: 2 }   hit you
  *   { block: N }                              protect itself
@@ -506,16 +767,62 @@ const HEROES = {
  * pattern: the order it uses its moves (loops forever)
  * ------------------------------------------------------------------ */
 const ENEMIES = {
+  /* ---- Area 1: slimes ---- */
+  gloop: {
+    name: "Gloop", emoji: "🟢", art: "slime_green", anim: "squish", maxHp: 13,
+    moves: {
+      bounce: { name: "Bounce", attack: 4 },
+      jiggle: { name: "Jiggle", block: 4 },
+    },
+    pattern: ["bounce","bounce","jiggle"],
+  },
+  bloop: {
+    name: "Bloop", emoji: "🔵", art: "slime_blue", anim: "squish", maxHp: 19,
+    moves: {
+      splash:    { name: "Splash", attack: 6 },
+      gel_shell: { name: "Gel Shell", block: 6 },
+    },
+    pattern: ["gel_shell","splash","splash"],
+  },
+  zap: {
+    name: "Zap", emoji: "⚡", art: "slime_spark", anim: "squish", maxHp: 15,
+    moves: {
+      crackle: { name: "Crackle", attack: 3, hits: 2 },
+      static_cling: { name: "Static Cling", playerStatus: { weak: 1 } },
+    },
+    pattern: ["crackle","crackle","static_cling"],
+  },
+  blush: {
+    name: "Blush", emoji: "💗", art: "slime_pink", anim: "squish", maxHp: 24,
+    moves: {
+      smooch:  { name: "Smooch", attack: 7 },
+      charm:   { name: "Charm", playerStatus: { weak: 2 } },
+      wobble:  { name: "Wobble", block: 5 },
+    },
+    pattern: ["charm","smooch","wobble","smooch"],
+  },
+  king_gloopius: {
+    name: "King Gloopius", emoji: "👑", art: "slime_king", anim: "squish", maxHp: 82, boss: true,
+    moves: {
+      royal_bounce: { name: "Royal Bounce", attack: 10 },
+      sticky_spit:  { name: "Sticky Spit", attack: 5, playerStatus: { weak: 2 } },
+      gel_armor:    { name: "Gel Armor", block: 9 },
+      grow:         { name: "Grow", selfStatus: { strength: 2 } },
+    },
+    pattern: ["grow","royal_bounce","sticky_spit","gel_armor","royal_bounce"],
+  },
+
+  /* ---- Area 2: the Whispering Woods ---- */
   gloomcap: {
-    name: "Gloomcap Sprout", emoji: "🍄", maxHp: 14,
+    name: "Gloomcap Sprout", emoji: "🍄", art: "gloomcap", anim: "bob", maxHp: 16,
     moves: {
       spore_bite: { name: "Spore Bite", attack: 5 },
-      toxic_puff: { name: "Toxic Puff", playerStatus: { poison: 2 } },
+      toxic_puff: { name: "Toxic Puff", playerStatus: { poison: 3 } },
     },
     pattern: ["spore_bite","spore_bite","toxic_puff"],
   },
   bog_croaker: {
-    name: "Bog Croaker", emoji: "🐸", maxHp: 32,
+    name: "Bog Croaker", emoji: "🐸", art: "croaker", anim: "squish", maxHp: 36,
     moves: {
       tongue_lash: { name: "Tongue Lash", attack: 8 },
       puff_up:     { name: "Puff Up", block: 6 },
@@ -524,7 +831,7 @@ const ENEMIES = {
     pattern: ["tongue_lash","puff_up","tongue_lash","dire_croak"],
   },
   thistle_imp: {
-    name: "Thistle Imp", emoji: "😈", maxHp: 18,
+    name: "Thistle Imp", emoji: "😈", art: "imp", anim: "float", maxHp: 18,
     moves: {
       prickle: { name: "Prickle", attack: 3, hits: 2 },
       jab:     { name: "Needle Jab", attack: 6 },
@@ -532,16 +839,16 @@ const ENEMIES = {
     pattern: ["prickle","jab"],
   },
   bramble_beast: {
-    name: "Bramble Beast", emoji: "🐗", maxHp: 42,
+    name: "Bramble Beast", emoji: "🐗", art: "beast", anim: "bob", maxHp: 42,
     moves: {
-      gore:   { name: "Gore", attack: 11 },
+      gore:   { name: "Gore", attack: 10 },
       harden: { name: "Harden", block: 8 },
       enrage: { name: "Enrage", selfStatus: { strength: 2 } },
     },
     pattern: ["harden","gore","enrage","gore"],
   },
   hollow_king: {
-    name: "The Hollow King", emoji: "👑", maxHp: 92, boss: true,
+    name: "The Hollow King", emoji: "👑", art: "hollow_king", anim: "float", maxHp: 96, boss: true,
     moves: {
       decree:  { name: "Royal Decree", selfStatus: { strength: 2 } },
       smash:   { name: "Scepter Smash", attack: 12 },
@@ -554,13 +861,28 @@ const ENEMIES = {
 
 /* ---------------- LEVELS --------------------------------------------
  * Each level is a list of battles; each battle is a list of enemy ids.
- * To add Level 2: copy the Level 1 block, give it new enemies, and
- * set locked: false. That's it — the map updates automatically.
+ * theme picks the backdrop from THEMES above. To add an area: copy a
+ * block, fill in new enemies, set locked: false — the map updates
+ * automatically and the run continues from one area into the next.
  * ------------------------------------------------------------------ */
 const LEVELS = [
   {
+    name: "The Slime Meadows",
+    flavor: "Something sweet is bubbling up from under the hills...",
+    theme: "meadow",
+    locked: false,
+    battles: [
+      { name: "Gloopy Fields",   enemies: ["gloop","gloop"] },
+      { name: "Bubbling Brook",  enemies: ["bloop","gloop"] },
+      { name: "Static Marsh",    enemies: ["zap","zap"] },
+      { name: "Pudding Bog",     enemies: ["blush","zap","gloop"] },
+      { name: "The Gel Throne",  enemies: ["king_gloopius"], boss: true },
+    ],
+  },
+  {
     name: "The Whispering Woods",
     flavor: "Something has hollowed out the heart of the forest...",
+    theme: "forest",
     locked: false,
     battles: [
       { name: "Forest Edge",     enemies: ["gloomcap","gloomcap"] },
@@ -569,8 +891,8 @@ const LEVELS = [
       { name: "The Hollow Throne", enemies: ["hollow_king"], boss: true },
     ],
   },
-  { name: "The Ember Caverns",  flavor: "Coming soon", locked: true },
-  { name: "The Skyspire Peaks", flavor: "Coming soon", locked: true },
+  { name: "The Ember Caverns",  flavor: "Coming soon", theme: "void", locked: true },
+  { name: "The Skyspire Peaks", flavor: "Coming soon", theme: "void", locked: true },
 ];
 
 /* =================================================================== *
@@ -594,16 +916,49 @@ const IS_TOUCH = window.matchMedia
   ? window.matchMedia("(hover: none)").matches
   : "ontouchstart" in window;
 
+/* ---------- art & theme helpers ---------- */
+function spriteHTML(holder, sizeEm) {
+  // holder has { art, emoji } — use the SVG if it exists, emoji otherwise
+  if (holder.art && ART[holder.art]) return ART[holder.art];
+  return `<span class="emoji-art" style="font-size:${sizeEm || 48}px;">${holder.emoji || "❓"}</span>`;
+}
+
+function setTheme(name) {
+  const t = THEMES[name] || THEMES.void;
+  document.body.className = t.sky;
+  $("scenery").innerHTML = t.scenery;
+  spawnAmbient(t.particle);
+}
+
+function spawnAmbient(kind) {
+  const layer = $("ambient");
+  layer.innerHTML = "";
+  const count = kind === "firefly" ? 14 : 12;
+  for (let i = 0; i < count; i++) {
+    const m = document.createElement("div");
+    m.className = `mote ${kind}`;
+    const s = kind === "firefly" ? 4 + Math.random() * 4 : 5 + Math.random() * 9;
+    m.style.width = m.style.height = s + "px";
+    m.style.left = Math.random() * 100 + "vw";
+    if (kind === "firefly") m.style.bottom = (5 + Math.random() * 50) + "vh";
+    m.style.animationDuration = (7 + Math.random() * 12) + "s" + (kind === "firefly" ? ", 2.2s" : "");
+    m.style.animationDelay = (-Math.random() * 14) + "s";
+    layer.appendChild(m);
+  }
+}
+
 /* ---------- screen handling ---------- */
 function showScreen(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   $(id).classList.add("active");
+  if (id === "screen-menu" || id === "screen-heroes") setTheme("void");
 }
 
 /* ---------- menu / hero select ---------- */
 function initMenu() {
   $("menu-title").textContent = CONFIG.title;
   $("menu-tagline").textContent = CONFIG.tagline;
+  setTheme("void");
 }
 
 function goHeroSelect() {
@@ -613,7 +968,7 @@ function goHeroSelect() {
     const el = document.createElement("div");
     el.className = "hero-card";
     el.innerHTML = `
-      <div class="portrait">${h.emoji}</div>
+      <div class="sprite anim-bob">${spriteHTML(h, 80)}</div>
       <h3>${h.name}</h3>
       <div class="hero-title">${h.title}</div>
       <div class="hero-hp">❤️ ${h.maxHp} HP</div>
@@ -639,7 +994,8 @@ function startRun(heroId) {
 
 function goMap() {
   const lvl = LEVELS[run.levelIndex];
-  $("map-title").textContent = `Level ${run.levelIndex + 1} — ${lvl.name}`;
+  setTheme(lvl.theme);
+  $("map-title").textContent = `Area ${run.levelIndex + 1} — ${lvl.name}`;
   $("map-sub").textContent = lvl.flavor;
   $("map-stats").innerHTML =
     `${run.hero.emoji} <b>${run.hero.name}</b> &nbsp; ❤️ <b>${run.hp}/${run.maxHp}</b> &nbsp; 🂠 Deck: <b>${run.deck.length}</b>`;
@@ -659,7 +1015,8 @@ function goMap() {
   const locked = $("locked-levels");
   locked.innerHTML = "";
   LEVELS.forEach((l, i) => {
-    if (l.locked) locked.innerHTML += `<div class="locked-level">🔒 Level ${i + 1} — ${l.name}</div>`;
+    if (i < run.levelIndex) locked.innerHTML += `<div class="locked-level cleared">✔ Area ${i + 1} — ${l.name}</div>`;
+    else if (i > run.levelIndex) locked.innerHTML += `<div class="locked-level">${l.locked ? "🔒" : "→"} Area ${i + 1} — ${l.name}</div>`;
   });
   showScreen("screen-map");
 }
@@ -693,6 +1050,7 @@ function makeCardEl(cardId, opts = {}) {
 function startBattle() {
   const lvl = LEVELS[run.levelIndex];
   const battle = lvl.battles[run.battleIndex];
+  setTheme(lvl.theme);
   bt = {
     def: battle,
     drawPile: shuffle(run.deck),
@@ -704,7 +1062,7 @@ function startBattle() {
     enemies: battle.enemies.map((eid, i) => {
       const e = ENEMIES[eid];
       return {
-        id: eid, idx: i, name: e.name, emoji: e.emoji, boss: !!e.boss,
+        id: eid, idx: i, name: e.name, emoji: e.emoji, art: e.art, anim: e.anim || "bob", boss: !!e.boss,
         hp: e.maxHp, maxHp: e.maxHp, block: 0, statuses: {},
         patternIdx: 0, intent: e.moves[e.pattern[0]],
       };
@@ -749,7 +1107,7 @@ function dealDamage(target, amount, piercing = false) {
   return dmg;
 }
 
-/* ---------- floating combat text ---------- */
+/* ---------- floating combat text & sparks ---------- */
 function floatText(anchor, text, cls) {
   if (!anchor) return;
   const r = anchor.getBoundingClientRect();
@@ -760,6 +1118,22 @@ function floatText(anchor, text, cls) {
   el.style.top = (r.top + r.height * 0.3) + "px";
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 1000);
+}
+function burst(anchor, color) {
+  if (!anchor) return;
+  const r = anchor.getBoundingClientRect();
+  for (let i = 0; i < 7; i++) {
+    const s = document.createElement("div");
+    s.className = "spark";
+    s.style.background = color;
+    s.style.left = (r.left + r.width / 2) + "px";
+    s.style.top = (r.top + r.height / 2) + "px";
+    const a = Math.random() * Math.PI * 2, d = 26 + Math.random() * 34;
+    s.style.setProperty("--dx", Math.cos(a) * d + "px");
+    s.style.setProperty("--dy", Math.sin(a) * d + "px");
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 600);
+  }
 }
 function enemyAnchor(i) { return document.querySelector(`#enemy-row .enemy[data-idx="${i}"]`); }
 function heroAnchor() { return $("hero-panel"); }
@@ -793,7 +1167,7 @@ function describeIntent(en) {
   return "❓";
 }
 
-function renderBattle() {
+function renderBattle(opts = {}) {
   // enemies
   const row = $("enemy-row");
   row.innerHTML = "";
@@ -802,13 +1176,14 @@ function renderBattle() {
     el.className = `enemy ${en.boss ? "boss" : ""}`;
     el.dataset.idx = i;
     if (en.hp <= 0) {
-      el.innerHTML = `<div class="sprite" style="filter:grayscale(1);opacity:.35;">💀</div><div class="ename" style="opacity:.4;">${en.name}</div>`;
+      el.classList.add("dead");
+      el.innerHTML = `<div class="sprite">${spriteHTML(en, 56)}</div><div class="ename" style="opacity:.4;">${en.name}</div>`;
     } else {
       const needsTarget = pendingCard !== null && pendingCard.needsTarget;
       if (needsTarget) el.classList.add("targetable");
       el.innerHTML = `
         <div class="intent">${describeIntent(en)}</div>
-        <div class="sprite">${en.emoji}</div>
+        <div class="sprite anim-${en.anim}">${spriteHTML(en, 64)}</div>
         <div class="ename">${en.name}</div>
         <div class="hpbar"><div class="fill" style="width:${(en.hp / en.maxHp) * 100}%"></div>
           <div class="hptext">${en.hp}/${en.maxHp}${en.block ? " 🛡️" + en.block : ""}</div></div>
@@ -820,7 +1195,7 @@ function renderBattle() {
 
   // hero
   $("hero-panel").innerHTML = `
-    <div class="sprite">${run.hero.emoji}</div>
+    <div class="sprite anim-bob">${spriteHTML(run.hero, 48)}</div>
     <div>
       <div class="pname">${run.hero.name}${bt.block ? `<span class="block-badge">🛡️ ${bt.block}</span>` : ""}</div>
       <div class="hpbar" style="width:150px;"><div class="fill" style="width:${(run.hp / run.maxHp) * 100}%"></div>
@@ -829,7 +1204,9 @@ function renderBattle() {
     </div>`;
 
   // energy & piles
-  $("energy-orb").textContent = `${bt.energy}/${CONFIG.energyPerTurn}`;
+  const orb = $("energy-orb");
+  orb.textContent = `${bt.energy}/${CONFIG.energyPerTurn}`;
+  orb.classList.toggle("spent", bt.energy === 0);
   $("draw-count").textContent = bt.drawPile.length;
   $("discard-count").textContent = bt.discardPile.length;
   $("end-turn-btn").disabled = busy;
@@ -842,7 +1219,9 @@ function renderBattle() {
     const el = makeCardEl(cardId);
     const playable = !busy && c.cost <= bt.energy;
     if (!playable) el.classList.add("unplayable");
+    else el.classList.add("glow");
     if (pendingCard && pendingCard.handIdx === i) el.classList.add("selected");
+    if (opts.deal) { el.classList.add("dealt"); el.style.animationDelay = (i * 50) + "ms"; }
     el.onclick = () => onCardClick(i);
     hand.appendChild(el);
   });
@@ -871,7 +1250,7 @@ async function startPlayerTurn(first = false) {
   bt.block = 0;
   bt.energy = CONFIG.energyPerTurn;
   drawCards(CONFIG.handSize);
-  renderBattle();
+  renderBattle({ deal: true });
   await showBanner(first ? bt.def.name.toUpperCase() : "YOUR TURN");
 
   // poison / burn / regen tick on the player (ignores Block)
@@ -879,6 +1258,7 @@ async function startPlayerTurn(first = false) {
     if (bt.statuses[dot]) {
       run.hp = Math.max(0, run.hp - bt.statuses[dot]);
       floatText(heroAnchor(), `-${bt.statuses[dot]}`, "dmg");
+      burst(heroAnchor(), dot === "burn" ? "#ff9d3a" : "#9fe06a");
       shake(heroAnchor());
       bt.statuses[dot]--;
       if (bt.statuses[dot] <= 0) delete bt.statuses[dot];
@@ -963,6 +1343,7 @@ async function playCard(handIdx, targetIdx) {
         dealDamage(en, dmg);
         const anchor = enemyAnchor(bt.enemies.indexOf(en));
         floatText(anchor, `-${dmg}`, "dmg");
+        burst(anchor, "#ffd23e");
         shake(anchor);
       }
       renderBattle();
@@ -978,11 +1359,12 @@ async function playCard(handIdx, targetIdx) {
     }
   }
   // self effects
-  if (fx.block) { bt.block += fx.block; floatText(heroAnchor(), `+${fx.block}`, "blk"); }
+  if (fx.block) { bt.block += fx.block; floatText(heroAnchor(), `+${fx.block}`, "blk"); burst(heroAnchor(), "#5fa8e8"); }
   if (fx.heal) {
     const healed = Math.min(run.maxHp - run.hp, fx.heal);
     run.hp += healed;
     floatText(heroAnchor(), `+${healed}`, "heal");
+    burst(heroAnchor(), "#8ae08a");
   }
   if (fx.selfStatus) {
     for (const [k, v] of Object.entries(fx.selfStatus)) addStatus(bt, k, v);
@@ -1023,6 +1405,7 @@ async function endTurn() {
       if (en.statuses[dot]) {
         dealDamage(en, en.statuses[dot], true);
         floatText(enemyAnchor(en.idx), `-${en.statuses[dot]}`, "dmg");
+        burst(enemyAnchor(en.idx), dot === "burn" ? "#ff9d3a" : "#9fe06a");
         shake(enemyAnchor(en.idx));
         en.statuses[dot]--;
         if (en.statuses[dot] <= 0) delete en.statuses[dot];
@@ -1036,6 +1419,8 @@ async function endTurn() {
     const m = en.intent;
     await sleep(280);
     if (m.attack != null) {
+      const lungeEl = enemyAnchor(en.idx);
+      if (lungeEl) { lungeEl.classList.add("lunge"); await sleep(180); }
       const hits = m.hits || 1;
       for (let h = 0; h < hits; h++) {
         const dmg = attackDamage(m.attack, en, bt);
@@ -1049,6 +1434,7 @@ async function endTurn() {
         if (remaining > 0) {
           run.hp = Math.max(0, run.hp - remaining);
           floatText(heroAnchor(), `-${remaining}`, "dmg");
+          burst(heroAnchor(), "#ff6a5a");
           shake(heroAnchor());
         }
         renderBattle();
@@ -1101,6 +1487,11 @@ function rollRewardCards() {
   return picks;
 }
 
+function nextUnlockedLevel() {
+  const next = LEVELS[run.levelIndex + 1];
+  return next && !next.locked ? next : null;
+}
+
 async function battleWon() {
   busy = true;
   await sleep(450);
@@ -1112,9 +1503,25 @@ async function battleWon() {
   bt = null;
 
   if (wasBoss) {
-    $("victory-sub").textContent =
-      `${run.hero.name} ${run.hero.title} cleansed ${LEVELS[run.levelIndex].name} ` +
-      `with ${run.hp}/${run.maxHp} HP and ${run.deck.length} cards (${run.cardsAdded} collected).`;
+    const clearedLevel = LEVELS[run.levelIndex];
+    const next = nextUnlockedLevel();
+    if (next) {
+      $("victory-emoji").innerHTML = `<div class="sprite anim-bob" style="width:130px;height:130px;">${spriteHTML(run.hero, 90)}</div>`;
+      $("victory-title").textContent = "AREA CLEAR!";
+      $("victory-sub").textContent =
+        `${clearedLevel.name} is safe! The road ahead leads to ${next.name}...`;
+      $("victory-buttons").innerHTML =
+        `<button class="btn" onclick="continueToNextLevel()">CONTINUE →</button>`;
+    } else {
+      $("victory-emoji").textContent = "🏆";
+      $("victory-title").textContent = "ALL AREAS CLEAR!";
+      $("victory-sub").textContent =
+        `${run.hero.name} ${run.hero.title} saved the realms with ` +
+        `${run.hp}/${run.maxHp} HP and ${run.deck.length} cards (${run.cardsAdded} collected).`;
+      $("victory-buttons").innerHTML =
+        `<button class="btn" onclick="goHeroSelect()">PLAY AGAIN</button>
+         <button class="btn secondary" onclick="showScreen('screen-menu')" style="margin-left:10px;">Menu</button>`;
+    }
     showScreen("screen-victory");
     return;
   }
@@ -1131,6 +1538,13 @@ async function battleWon() {
   $("reward-sub").textContent = `Healed ${CONFIG.healAfterBattle} HP — now choose a card to add to your deck`;
   $("reward-skip").textContent = `Skip (+${CONFIG.skipRewardHeal} HP)`;
   showScreen("screen-reward");
+}
+
+function continueToNextLevel() {
+  run.levelIndex++;
+  run.battleIndex = 0;
+  run.hp = Math.min(run.maxHp, run.hp + Math.round(run.maxHp * CONFIG.healBetweenAreas));
+  goMap();
 }
 
 function skipReward() {

@@ -10,7 +10,14 @@ Open `CardWardens.html` in a browser. That's it — works on desktop and phones 
 
 To get a shareable URL you can play from any phone, enable GitHub Pages for this repo (Settings → Pages → Deploy from a branch → `main`), then play at `https://liamdalwai.github.io/Cube-3D/CardWardens.html`.
 
-**Demo content:** 3 playable Wardens, 33 cards, Level 1 — *The Whispering Woods* (3 battles + a boss). Levels 2 and 3 are shown on the map as coming soon; we're building them one at a time.
+**Demo content:** 3 playable Wardens, 33 cards, and two full areas in one continuous run:
+
+1. **The Slime Meadows** — 5 zones of sunny hills and mischievous slimes (Gloop, Bloop, Zap, Blush) ending at King Gloopius on the Gel Throne
+2. **The Whispering Woods** — 4 zones of misty forest (Gloomcaps, the Bog Croaker, Thistle Imps, the Bramble Beast) ending at the Hollow King
+
+Areas 3 and 4 (*Ember Caverns*, *Skyspire Peaks*) show on the map as coming soon — we're building them one at a time.
+
+**Graphics:** every character and enemy is an original hand-drawn vector (SVG) sprite — infinitely sharp at any resolution — with per-area animated backdrops (rolling meadow hills with drifting bubbles, dark forest with blinking fireflies), idle squish/bob/float animations, attack lunges, hit sparks, floating damage numbers and dealt-card animations. Swap any sprite in the `ART` library for your own SVG, or delete one and the game falls back to that character's emoji.
 
 ## The Wardens
 
@@ -38,7 +45,8 @@ Status effects available out of the box: 💪 Strength, 🌀 Weak, 💔 Vulnerab
 
 ## Roadmap
 
-- [x] Level 1 — The Whispering Woods
-- [ ] Level 2 — The Ember Caverns
-- [ ] Level 3 — The Skyspire Peaks
+- [x] Area 1 — The Slime Meadows (5 zones)
+- [x] Area 2 — The Whispering Woods (4 zones)
+- [ ] Area 3 — The Ember Caverns
+- [ ] Area 4 — The Skyspire Peaks
 - [ ] Relics / artifacts, card upgrades, save progress
