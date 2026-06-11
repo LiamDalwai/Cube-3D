@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card Wardens — Demo</title>
+<style>
+  :root {
+    --gold: #e8c468;
+    --gold-dim: #a8862f;
+    --bg-dark: #14101f;
+    --panel: #221a35;
+    --panel-light: #2f2450;
+    --hp: #e34f4f;
+    --block: #5fa8e8;
+    --energy: #f5c542;
+    --common: #9aa3b2;
+    --uncommon: #5fa8e8;
+    --rare: #e8c468;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+  html, body { height: 100%; }
+  body {
+    background: radial-gradient(ellipse at 50% 0%, #2a2045 0%, var(--bg-dark) 70%);
+    color: #f0e9d8;
+    font-family: Georgia, 'Times New Roman', serif;
+    overflow: hidden;
+  }
+
+  /* ---------- screens ---------- */
+  .screen { display: none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
+  .screen.active { display: flex; }
+
+  h1.game-title {
+    font-size: clamp(40px, 8vw, 84px);
+    letter-spacing: 6px;
+    color: var(--gold);
+    text-shadow: 0 0 30px rgba(232,196,104,.35), 0 4px 0 #4a3408;
+    text-align: center;
+  }
+  .subtitle { color: #b9aed6; margin: 10px 0 4px; font-style: italic; text-align: center; }
+  .demo-badge {
+    display: inline-block; margin: 14px 0 30px; padding: 4px 18px;
+    border: 1px solid var(--gold-dim); border-radius: 20px;
+    color: var(--gold); letter-spacing: 4px; font-size: 13px;
+  }
+
+  .btn {
+    font-family: inherit; cursor: pointer; color: #1d1505;
+    background: linear-gradient(180deg, #f3d588, #c89a3a);
+    border: 1px solid #8a6a1d; border-radius: 10px;
+    padding: 14px 44px; font-size: 20px; letter-spacing: 2px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.5);
+    transition: transform .12s, box-shadow .12s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(232,196,104,.35); }
+  .btn:disabled { opacity: .4; cursor: default; transform: none; }
+  .btn.secondary {
+    background: linear-gradient(180deg, #3b2f5e, #261d40);
+    color: #cfc4ea; border-color: #574a85;
+  }
+  .menu-note { margin-top: 34px; color: #7e7398; font-size: 14px; max-width: 460px; text-align: center; line-height: 1.5; }
+
+  /* ---------- hero select ---------- */
+  .hero-grid { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; margin-top: 26px; }
+  .hero-card {
+    width: 240px; background: linear-gradient(180deg, var(--panel-light), var(--panel));
+    border: 2px solid #4a3d75; border-radius: 16px; padding: 20px 16px;
+    text-align: center; cursor: pointer; transition: transform .15s, border-color .15s, box-shadow .15s;
+  }
+  .hero-card:hover { transform: translateY(-6px); border-color: var(--gold); box-shadow: 0 12px 30px rgba(232,196,104,.25); }
+  .hero-card .portrait { font-size: 64px; line-height: 1.2; filter: drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
+  .hero-card h3 { color: var(--gold); margin: 8px 0 2px; font-size: 21px; }
+  .hero-card .hero-title { color: #b9aed6; font-size: 13px; font-style: italic; }
+  .hero-card .hero-hp { margin: 10px 0 6px; color: var(--hp); font-size: 15px; }
+  .hero-card p.desc { color: #cfc4ea; font-size: 13px; line-height: 1.45; min-height: 56px; }
+
+  /* ---------- map ---------- */
+  .map-panel { background: rgba(20,14,38,.6); border: 1px solid #4a3d75; border-radius: 18px; padding: 30px 40px; text-align: center; max-width: 720px; }
+  .map-title { color: var(--gold); font-size: 30px; letter-spacing: 2px; }
+  .map-sub { color: #b9aed6; font-style: italic; margin: 6px 0 24px; }
+  .node-row { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 26px; flex-wrap: wrap; }
+  .map-node {
+    width: 74px; height: 74px; border-radius: 50%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; font-size: 26px;
+    background: var(--panel); border: 2px solid #4a3d75; color: #6f6390;
+  }
+  .map-node small { font-size: 10px; font-family: sans-serif; letter-spacing: 1px; margin-top: 2px; }
+  .map-node.done { border-color: #4f8a4f; color: #7fd07f; background: #1d2b1d; }
+  .map-node.current { border-color: var(--gold); color: var(--gold); cursor: pointer; box-shadow: 0 0 22px rgba(232,196,104,.45); animation: pulse 1.6s infinite; }
+  .map-node.current:hover { transform: scale(1.08); }
+  .node-link { width: 26px; height: 2px; background: #4a3d75; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 14px rgba(232,196,104,.35);} 50% { box-shadow: 0 0 30px rgba(232,196,104,.65);} }
+  .locked-levels { display: flex; gap: 14px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+  .locked-level { border: 1px dashed #4a3d75; border-radius: 12px; padding: 10px 18px; color: #6f6390; font-size: 13px; }
+  .run-stats { color: #cfc4ea; margin-bottom: 18px; font-size: 16px; }
+  .run-stats b { color: var(--gold); }
+
+  /* ---------- battle layout ---------- */
+  #battle { justify-content: space-between; padding: 0; }
+  .battle-top {
+    width: 100%; display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 22px; background: rgba(10,7,20,.55); border-bottom: 1px solid #3a2f60;
+    font-size: 15px; color: #b9aed6;
+  }
+  .battle-top .bname { color: var(--gold); letter-spacing: 1px; font-size: 17px; }
+  .pile-info span { margin-left: 16px; }
+
+  .enemy-row { display: flex; gap: 30px; align-items: flex-end; justify-content: center; flex: 1; padding: 10px 20px 0; }
+  .enemy {
+    text-align: center; cursor: default; position: relative; padding: 10px 14px;
+    border-radius: 14px; border: 2px solid transparent; transition: border-color .15s, transform .1s; min-width: 130px;
+  }
+  .enemy.targetable { border-color: var(--gold); cursor: pointer; animation: pulse 1.4s infinite; }
+  .enemy.targetable:hover { transform: scale(1.06); }
+  .enemy .sprite { font-size: 64px; filter: drop-shadow(0 6px 12px rgba(0,0,0,.7)); transition: transform .1s; }
+  .enemy.boss .sprite { font-size: 92px; }
+  .enemy.hit .sprite { animation: shake .35s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-9px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(4px)} }
+  .enemy .ename { font-size: 14px; color: #e7ddc4; margin-top: 2px; }
+  .intent { font-size: 14px; color: #f0b8b8; height: 22px; margin-bottom: 2px; font-family: sans-serif; }
+
+  .hpbar { width: 120px; height: 12px; background: #34122b; border: 1px solid #000; border-radius: 7px; margin: 4px auto 0; overflow: hidden; position: relative; }
+  .hpbar .fill { height: 100%; background: linear-gradient(180deg,#f06a6a,#b22a2a); transition: width .25s; }
+  .hpbar .hptext { position: absolute; inset: 0; font-size: 9px; font-family: sans-serif; color: #fff; display:flex; align-items:center; justify-content:center; text-shadow: 0 1px 2px #000; }
+  .status-row { height: 20px; margin-top: 4px; font-size: 12px; font-family: sans-serif; }
+  .chip { display: inline-block; background: rgba(0,0,0,.45); border-radius: 9px; padding: 1px 7px; margin: 0 2px; color: #ffd9a0; }
+
+  .player-row {
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 30px; gap: 18px;
+  }
+  .hero-panel { display: flex; align-items: center; gap: 14px; position: relative; padding: 8px 12px; border-radius: 14px; }
+  .hero-panel.hit { animation: shake .35s; }
+  .hero-panel .sprite { font-size: 58px; filter: drop-shadow(0 5px 10px rgba(0,0,0,.7)); }
+  .hero-panel .pname { color: var(--gold); font-size: 16px; }
+  .block-badge { color: var(--block); font-family: sans-serif; font-size: 13px; margin-left: 6px; }
+
+  .energy-orb {
+    width: 72px; height: 72px; border-radius: 50%; flex-shrink: 0;
+    background: radial-gradient(circle at 35% 30%, #ffe9a8, #d99c1e 60%, #7a5208);
+    border: 2px solid #8a6a1d; display: flex; align-items: center; justify-content: center;
+    font-size: 26px; color: #2a1d04; font-weight: bold; box-shadow: 0 0 24px rgba(245,197,66,.45);
+    font-family: sans-serif;
+  }
+
+  /* ---------- hand ---------- */
+  .hand { display: flex; justify-content: center; align-items: flex-end; gap: 8px; width: 100%; min-height: 210px; padding: 4px 10px 14px; flex-wrap: nowrap; }
+  .card {
+    width: 132px; height: 188px; border-radius: 12px; position: relative; flex-shrink: 1;
+    background: linear-gradient(180deg, #34295a 0%, #221a35 100%);
+    border: 2px solid var(--common); cursor: pointer;
+    transition: transform .14s, box-shadow .14s; text-align: center; padding: 8px 7px;
+    box-shadow: 0 6px 14px rgba(0,0,0,.55);
+  }
+  .card.uncommon { border-color: var(--uncommon); }
+  .card.rare { border-color: var(--rare); box-shadow: 0 6px 18px rgba(232,196,104,.3); }
+  .card:hover { transform: translateY(-26px) scale(1.07); z-index: 5; box-shadow: 0 14px 30px rgba(0,0,0,.7); }
+  .card.unplayable { filter: grayscale(.7) brightness(.65); cursor: default; }
+  .card.unplayable:hover { transform: none; }
+  .card.selected { transform: translateY(-30px) scale(1.1); border-color: #fff; z-index: 6; }
+  .card .cost {
+    position: absolute; top: -10px; left: -10px; width: 32px; height: 32px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffe9a8, #d99c1e 65%, #7a5208);
+    border: 2px solid #8a6a1d; color: #2a1d04; font-weight: bold; font-family: sans-serif;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .card .art { font-size: 42px; margin-top: 8px; filter: drop-shadow(0 3px 6px rgba(0,0,0,.6)); }
+  .card .cname { font-size: 13px; color: var(--gold); margin-top: 4px; line-height: 1.15; }
+  .card .ctype { font-size: 9px; letter-spacing: 2px; color: #8d80b5; font-family: sans-serif; margin: 3px 0; text-transform: uppercase; }
+  .card .ctext { font-size: 11px; color: #ded5f0; line-height: 1.3; font-family: sans-serif; padding: 0 2px; }
+  .card.mini { width: 108px; height: 154px; cursor: default; }
+  .card.mini:hover { transform: none; }
+  .card.mini .art { font-size: 32px; }
+  .card.mini .cname { font-size: 11px; }
+  .card.mini .ctext { font-size: 9.5px; }
+
+  .center-msg { min-height: 26px; color: var(--gold); font-style: italic; text-align: center; font-size: 16px; }
+
+  /* turn banner */
+  .turn-banner {
+    position: fixed; top: 38%; left: 50%; transform: translate(-50%,-50%);
+    font-size: 44px; color: var(--gold); letter-spacing: 6px; pointer-events: none;
+    text-shadow: 0 0 30px rgba(0,0,0,.9); opacity: 0; z-index: 60;
+  }
+  .turn-banner.show { animation: bannerIn 1.1s ease forwards; }
+  @keyframes bannerIn { 0%{opacity:0; transform:translate(-50%,-50%) scale(.7)} 20%{opacity:1; transform:translate(-50%,-50%) scale(1)} 80%{opacity:1} 100%{opacity:0} }
+
+  /* floating combat text */
+  .float-text {
+    position: fixed; pointer-events: none; font-weight: bold; font-family: sans-serif;
+    font-size: 26px; z-index: 70; text-shadow: 0 2px 4px #000; animation: floatUp 1s ease-out forwards;
+  }
+  @keyframes floatUp { 0%{opacity:1; transform:translateY(0)} 100%{opacity:0; transform:translateY(-56px)} }
+  .float-text.dmg { color: #ff8a7a; } .float-text.blk { color: var(--block); }
+  .float-text.heal { color: #8ae08a; } .float-text.stat { color: #ffd9a0; font-size: 18px; }
+
+  /* ---------- reward / end screens ---------- */
+  .reward-panel { text-align: center; }
+  .reward-panel h2 { color: var(--gold); font-size: 38px; letter-spacing: 3px; }
+  .reward-panel .rsub { color: #b9aed6; margin: 8px 0 26px; font-style: italic; }
+  .reward-cards { display: flex; gap: 20px; justify-content: center; margin-bottom: 28px; flex-wrap: wrap; }
+  .reward-cards .card { cursor: pointer; }
+  .reward-cards .card:hover { transform: translateY(-14px) scale(1.08); }
+  .end-emoji { font-size: 90px; margin-bottom: 10px; }
+
+  /* deck modal */
+  .modal-back { display: none; position: fixed; inset: 0; background: rgba(5,3,12,.85); z-index: 90; align-items: center; justify-content: center; }
+  .modal-back.open { display: flex; }
+  .modal { background: var(--panel); border: 1px solid #574a85; border-radius: 16px; padding: 24px; max-width: 860px; max-height: 80vh; overflow-y: auto; text-align: center; }
+  .modal h3 { color: var(--gold); margin-bottom: 16px; letter-spacing: 2px; }
+  .deck-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 18px; }
+
+  @media (max-width: 760px) {
+    .card { width: 104px; height: 152px; } .card .art { font-size: 30px; }
+    .card .cname { font-size: 11px; } .card .ctext { font-size: 9px; }
+    .enemy .sprite { font-size: 46px; } .enemy.boss .sprite { font-size: 66px; }
+    .hand { min-height: 165px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== MAIN MENU ===================== -->
+<div id="screen-menu" class="screen active">
+  <h1 class="game-title" id="menu-title">CARD WARDENS</h1>
+  <div class="subtitle" id="menu-tagline">Forge your deck. Guard the realms.</div>
+  <div class="demo-badge">DEMO &nbsp;·&nbsp; LEVEL 1</div>
+  <button class="btn" onclick="goHeroSelect()">PLAY</button>
+  <div class="menu-note">
+    Every hero, card, enemy and level in this game lives in the
+    <b>GAME DATA</b> section at the top of this file — open it in any text
+    editor and make it your own.
+  </div>
+</div>
+
+<!-- ===================== HERO SELECT ===================== -->
+<div id="screen-heroes" class="screen">
+  <h1 class="game-title" style="font-size:34px;">CHOOSE YOUR WARDEN</h1>
+  <div class="hero-grid" id="hero-grid"></div>
+  <div style="margin-top:26px;"><button class="btn secondary" onclick="showScreen('screen-menu')">Back</button></div>
+</div>
+
+<!-- ===================== MAP ===================== -->
+<div id="screen-map" class="screen">
+  <div class="map-panel">
+    <div class="map-title" id="map-title"></div>
+    <div class="map-sub" id="map-sub"></div>
+    <div class="run-stats" id="map-stats"></div>
+    <div class="node-row" id="node-row"></div>
+    <button class="btn" id="map-fight-btn" onclick="startBattle()">FIGHT</button>
+    <button class="btn secondary" onclick="openDeckModal()" style="margin-left:10px;">View Deck</button>
+    <div class="locked-levels" id="locked-levels"></div>
+  </div>
+</div>
+
+<!-- ===================== BATTLE ===================== -->
+<div id="screen-battle" class="screen" style="justify-content:space-between; padding:0;">
+  <div class="battle-top">
+    <div class="bname" id="battle-name"></div>
+    <div class="pile-info">
+      <span>🂠 Draw: <b id="draw-count">0</b></span>
+      <span>🗑️ Discard: <b id="discard-count">0</b></span>
+    </div>
+  </div>
+  <div class="enemy-row" id="enemy-row"></div>
+  <div class="center-msg" id="center-msg"></div>
+  <div class="player-row">
+    <div class="hero-panel" id="hero-panel"></div>
+    <div style="display:flex; align-items:center; gap:18px;">
+      <div class="energy-orb" id="energy-orb">3/3</div>
+      <button class="btn" id="end-turn-btn" onclick="endTurn()">END TURN</button>
+    </div>
+  </div>
+  <div class="hand" id="hand"></div>
+</div>
+
+<!-- ===================== REWARD ===================== -->
+<div id="screen-reward" class="screen">
+  <div class="reward-panel">
+    <h2>VICTORY!</h2>
+    <div class="rsub" id="reward-sub">Choose a card to add to your deck</div>
+    <div class="reward-cards" id="reward-cards"></div>
+    <button class="btn secondary" id="reward-skip" onclick="skipReward()"></button>
+  </div>
+</div>
+
+<!-- ===================== DEFEAT ===================== -->
+<div id="screen-defeat" class="screen">
+  <div class="reward-panel">
+    <div class="end-emoji">💀</div>
+    <h2 style="color:#e34f4f;">DEFEATED</h2>
+    <div class="rsub" id="defeat-sub"></div>
+    <button class="btn" onclick="goHeroSelect()">TRY AGAIN</button>
+    <button class="btn secondary" onclick="showScreen('screen-menu')" style="margin-left:10px;">Menu</button>
+  </div>
+</div>
+
+<!-- ===================== VICTORY ===================== -->
+<div id="screen-victory" class="screen">
+  <div class="reward-panel">
+    <div class="end-emoji">🏆</div>
+    <h2>LEVEL COMPLETE!</h2>
+    <div class="rsub" id="victory-sub"></div>
+    <div class="menu-note" style="margin-top:8px;">More levels coming soon — add them to the LEVELS list in the GAME DATA section!</div>
+    <div style="margin-top:24px;">
+      <button class="btn" onclick="goHeroSelect()">PLAY AGAIN</button>
+      <button class="btn secondary" onclick="showScreen('screen-menu')" style="margin-left:10px;">Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- deck modal -->
+<div class="modal-back" id="deck-modal" onclick="if(event.target===this)closeDeckModal()">
+  <div class="modal">
+    <h3 id="deck-modal-title">YOUR DECK</h3>
+    <div class="deck-grid" id="deck-grid"></div>
+    <button class="btn secondary" onclick="closeDeckModal()">Close</button>
+  </div>
+</div>
+
+<div class="turn-banner" id="turn-banner"></div>
+
+<script>
+"use strict";
+/* =================================================================== *
+ *                                                                     *
+ *   ██████  GAME DATA — EDIT EVERYTHING BELOW  ██████                 *
+ *                                                                     *
+ *   This section is the whole game. Change names, numbers, emoji,    *
+ *   add cards, heroes, enemies and levels — no engine knowledge      *
+ *   needed. The engine below just reads this data.                   *
+ *                                                                     *
+ * =================================================================== */
+
+const CONFIG = {
+  title: "CARD WARDENS",                    // shown on the main menu
+  tagline: "Forge your deck. Guard the realms.",
+  energyPerTurn: 3,        // energy you get every turn
+  handSize: 5,             // cards drawn at the start of each turn
+  maxHandSize: 10,         // can never hold more than this
+  rewardChoices: 3,        // cards offered after winning a battle
+  skipRewardHeal: 6,       // HP healed if you skip the card reward
+  healAfterBattle: 5,      // HP automatically healed after every battle
+  rewardRarityWeights: { common: 60, uncommon: 30, rare: 10 },
+};
+
+/* ---------------- STATUS EFFECTS (used by cards & enemies) ----------
+ * strength:   +1 damage per stack on attacks (lasts all battle)
+ * weak:       deal 25% less damage (1 stack fades each turn)
+ * vulnerable: take 50% more damage (1 stack fades each turn)
+ * poison:     lose stacks HP at start of turn, ignores Block (fades by 1)
+ * burn:       same as poison, fiery flavour (fades by 1)
+ * regen:      heal stacks HP at start of turn (fades by 1)
+ * ------------------------------------------------------------------ */
+const STATUS_INFO = {
+  strength:   { emoji: "💪", name: "Strength" },
+  weak:       { emoji: "🌀", name: "Weak" },
+  vulnerable: { emoji: "💔", name: "Vulnerable" },
+  poison:     { emoji: "☠️", name: "Poison" },
+  burn:       { emoji: "🔥", name: "Burn" },
+  regen:      { emoji: "💚", name: "Regen" },
+};
+
+/* ---------------- CARDS --------------------------------------------
+ * cost:   energy to play
+ * type:   "attack" or "skill"  (just a label on the card)
+ * rarity: "starter", "common", "uncommon" or "rare"
+ * fx:     what the card does — any mix of:
+ *   dmg: N        deal N damage          hits: N   ...N times
+ *   aoe: true     damage/debuffs hit ALL enemies
+ *   block: N      gain N Block           heal: N    restore N HP
+ *   draw: N       draw N cards           energy: N  gain N energy
+ *   enemyStatus: { poison: 3 }   apply to the target (or all if aoe)
+ *   selfStatus:  { strength: 2 } apply to yourself
+ *   exhaust: true the card is removed for the rest of the battle
+ * ------------------------------------------------------------------ */
+const CARDS = {
+  /* ---- Kaela, the Flame Warden ---- */
+  ember_slash:   { name: "Ember Slash",    cost: 1, type: "attack", rarity: "starter",  art: "🗡️", desc: "Deal 6 damage.", fx: { dmg: 6 } },
+  molten_guard:  { name: "Molten Guard",   cost: 1, type: "skill",  rarity: "starter",  art: "🛡️", desc: "Gain 5 Block.", fx: { block: 5 } },
+  war_cry:       { name: "War Cry",        cost: 1, type: "skill",  rarity: "starter",  art: "📣", desc: "Gain 2 Strength. Exhaust.", fx: { selfStatus: { strength: 2 }, exhaust: true } },
+  twin_flames:   { name: "Twin Flames",    cost: 1, type: "attack", rarity: "common",   art: "🔥", desc: "Deal 4 damage twice.", fx: { dmg: 4, hits: 2 } },
+  ignite:        { name: "Ignite",         cost: 1, type: "skill",  rarity: "common",   art: "🕯️", desc: "Apply 4 Burn.", fx: { enemyStatus: { burn: 4 } } },
+  molten_wall:   { name: "Molten Wall",    cost: 2, type: "skill",  rarity: "common",   art: "🧱", desc: "Gain 11 Block.", fx: { block: 11 } },
+  searing_blade: { name: "Searing Blade",  cost: 2, type: "attack", rarity: "uncommon", art: "⚔️", desc: "Deal 10 damage. Apply 2 Vulnerable.", fx: { dmg: 10, enemyStatus: { vulnerable: 2 } } },
+  flame_burst:   { name: "Flame Burst",    cost: 2, type: "attack", rarity: "uncommon", art: "💥", desc: "Deal 8 damage to ALL enemies.", fx: { dmg: 8, aoe: true } },
+  phoenix_heart: { name: "Phoenix Heart",  cost: 2, type: "skill",  rarity: "uncommon", art: "🐦‍🔥", desc: "Heal 8 HP. Exhaust.", fx: { heal: 8, exhaust: true } },
+  inferno:       { name: "Inferno",        cost: 3, type: "attack", rarity: "rare",     art: "🌋", desc: "Deal 20 damage.", fx: { dmg: 20 } },
+  blazing_speed: { name: "Blazing Speed",  cost: 0, type: "skill",  rarity: "rare",     art: "💨", desc: "Gain 1 energy. Draw 2 cards. Exhaust.", fx: { energy: 1, draw: 2, exhaust: true } },
+
+  /* ---- Thorn, the Grove Warden ---- */
+  thorn_whip:    { name: "Thorn Whip",     cost: 1, type: "attack", rarity: "starter",  art: "🌿", desc: "Deal 6 damage.", fx: { dmg: 6 } },
+  bark_skin:     { name: "Bark Skin",      cost: 1, type: "skill",  rarity: "starter",  art: "🪵", desc: "Gain 5 Block.", fx: { block: 5 } },
+  sap_sip:       { name: "Sap Sip",        cost: 1, type: "skill",  rarity: "starter",  art: "🍯", desc: "Heal 3 HP. Gain 3 Block.", fx: { heal: 3, block: 3 } },
+  venom_lash:    { name: "Venom Lash",     cost: 1, type: "attack", rarity: "common",   art: "🐍", desc: "Deal 5 damage. Apply 3 Poison.", fx: { dmg: 5, enemyStatus: { poison: 3 } } },
+  entangle:      { name: "Entangle",       cost: 1, type: "skill",  rarity: "common",   art: "🪢", desc: "Apply 2 Weak.", fx: { enemyStatus: { weak: 2 } } },
+  regrowth:      { name: "Regrowth",       cost: 1, type: "skill",  rarity: "common",   art: "🌱", desc: "Gain 3 Regen.", fx: { selfStatus: { regen: 3 } } },
+  iron_root:     { name: "Iron Root",      cost: 2, type: "skill",  rarity: "uncommon", art: "🌳", desc: "Gain 13 Block.", fx: { block: 13 } },
+  toxic_spores:  { name: "Toxic Spores",   cost: 2, type: "skill",  rarity: "uncommon", art: "🍄", desc: "Apply 5 Poison to ALL enemies.", fx: { enemyStatus: { poison: 5 }, aoe: true } },
+  natures_wrath: { name: "Nature's Wrath", cost: 2, type: "attack", rarity: "uncommon", art: "🦌", desc: "Deal 9 damage. Apply 3 Poison.", fx: { dmg: 9, enemyStatus: { poison: 3 } } },
+  overgrowth:    { name: "Overgrowth",     cost: 3, type: "attack", rarity: "rare",     art: "🌲", desc: "Deal 10 damage and apply 3 Poison to ALL enemies.", fx: { dmg: 10, enemyStatus: { poison: 3 }, aoe: true } },
+  heartwood:     { name: "Heartwood",      cost: 1, type: "skill",  rarity: "rare",     art: "💚", desc: "Heal 5 HP. Gain 5 Block. Draw 1 card.", fx: { heal: 5, block: 5, draw: 1 } },
+
+  /* ---- Zyra, the Storm Warden ---- */
+  arc_jolt:      { name: "Arc Jolt",       cost: 1, type: "attack", rarity: "starter",  art: "⚡", desc: "Deal 6 damage.", fx: { dmg: 6 } },
+  static_guard:  { name: "Static Guard",   cost: 1, type: "skill",  rarity: "starter",  art: "🛡️", desc: "Gain 5 Block.", fx: { block: 5 } },
+  spark:         { name: "Spark",          cost: 0, type: "attack", rarity: "starter",  art: "✨", desc: "Deal 4 damage.", fx: { dmg: 4 } },
+  static_field:  { name: "Static Field",   cost: 1, type: "skill",  rarity: "common",   art: "🕸️", desc: "Gain 6 Block. Draw 1 card.", fx: { block: 6, draw: 1 } },
+  wind_veil:     { name: "Wind Veil",      cost: 1, type: "skill",  rarity: "common",   art: "🌬️", desc: "Gain 5 Block. Apply 1 Weak.", fx: { block: 5, enemyStatus: { weak: 1 } } },
+  storm_surge:   { name: "Storm Surge",    cost: 1, type: "skill",  rarity: "common",   art: "🌊", desc: "Draw 2 cards.", fx: { draw: 2 } },
+  thunder_strike:{ name: "Thunder Strike", cost: 2, type: "attack", rarity: "uncommon", art: "🔨", desc: "Deal 14 damage.", fx: { dmg: 14 } },
+  chain_lightning:{ name: "Chain Lightning", cost: 2, type: "attack", rarity: "uncommon", art: "🌩️", desc: "Deal 7 damage to ALL enemies.", fx: { dmg: 7, aoe: true } },
+  overcharge:    { name: "Overcharge",     cost: 0, type: "skill",  rarity: "uncommon", art: "🔋", desc: "Gain 2 energy. Exhaust.", fx: { energy: 2, exhaust: true } },
+  tempest:       { name: "Tempest",        cost: 3, type: "attack", rarity: "rare",     art: "🌪️", desc: "Deal 5 damage 4 times.", fx: { dmg: 5, hits: 4 } },
+  eye_of_storm:  { name: "Eye of the Storm", cost: 2, type: "skill", rarity: "rare",    art: "👁️", desc: "Gain 12 Block. Draw 2 cards.", fx: { block: 12, draw: 2 } },
+};
+
+/* ---------------- HEROES (your Wardens) -----------------------------
+ * starterDeck: card ids you begin every run with
+ * cardPool:    cards that can appear as battle rewards
+ * ------------------------------------------------------------------ */
+const HEROES = {
+  kaela: {
+    name: "Kaela", title: "the Flame Warden", emoji: "🦁", maxHp: 80,
+    desc: "A fearless knight of the Ember Order. Overwhelms foes with raw fire and fury.",
+    starterDeck: ["ember_slash","ember_slash","ember_slash","ember_slash","ember_slash",
+                  "molten_guard","molten_guard","molten_guard","molten_guard","war_cry"],
+    cardPool: ["twin_flames","ignite","molten_wall","searing_blade","flame_burst","phoenix_heart","inferno","blazing_speed"],
+  },
+  thorn: {
+    name: "Thorn", title: "the Grove Warden", emoji: "🦉", maxHp: 85,
+    desc: "An ancient keeper of the deep woods. Outlasts enemies with poison, roots and regrowth.",
+    starterDeck: ["thorn_whip","thorn_whip","thorn_whip","thorn_whip","thorn_whip",
+                  "bark_skin","bark_skin","bark_skin","bark_skin","sap_sip"],
+    cardPool: ["venom_lash","entangle","regrowth","iron_root","toxic_spores","natures_wrath","overgrowth","heartwood"],
+  },
+  zyra: {
+    name: "Zyra", title: "the Storm Warden", emoji: "🐉", maxHp: 75,
+    desc: "A lightning-touched duelist. Fragile, but cycles cards and energy faster than any storm.",
+    starterDeck: ["arc_jolt","arc_jolt","arc_jolt","arc_jolt","arc_jolt",
+                  "static_guard","static_guard","static_guard","static_guard","spark"],
+    cardPool: ["static_field","wind_veil","storm_surge","thunder_strike","chain_lightning","overcharge","tempest","eye_of_storm"],
+  },
+};
+
+/* ---------------- ENEMIES -------------------------------------------
+ * moves: things the enemy can do —
+ *   { attack: N }  / { attack: N, hits: 2 }   hit you
+ *   { block: N }                              protect itself
+ *   { selfStatus: { strength: 2 } }           buff itself
+ *   { playerStatus: { weak: 2 } }             debuff you
+ * pattern: the order it uses its moves (loops forever)
+ * ------------------------------------------------------------------ */
+const ENEMIES = {
+  gloomcap: {
+    name: "Gloomcap Sprout", emoji: "🍄", maxHp: 14,
+    moves: {
+      spore_bite: { name: "Spore Bite", attack: 5 },
+      toxic_puff: { name: "Toxic Puff", playerStatus: { poison: 2 } },
+    },
+    pattern: ["spore_bite","spore_bite","toxic_puff"],
+  },
+  bog_croaker: {
+    name: "Bog Croaker", emoji: "🐸", maxHp: 32,
+    moves: {
+      tongue_lash: { name: "Tongue Lash", attack: 8 },
+      puff_up:     { name: "Puff Up", block: 6 },
+      dire_croak:  { name: "Dire Croak", playerStatus: { weak: 2 } },
+    },
+    pattern: ["tongue_lash","puff_up","tongue_lash","dire_croak"],
+  },
+  thistle_imp: {
+    name: "Thistle Imp", emoji: "😈", maxHp: 18,
+    moves: {
+      prickle: { name: "Prickle", attack: 3, hits: 2 },
+      jab:     { name: "Needle Jab", attack: 6 },
+    },
+    pattern: ["prickle","jab"],
+  },
+  bramble_beast: {
+    name: "Bramble Beast", emoji: "🐗", maxHp: 42,
+    moves: {
+      gore:   { name: "Gore", attack: 11 },
+      harden: { name: "Harden", block: 8 },
+      enrage: { name: "Enrage", selfStatus: { strength: 2 } },
+    },
+    pattern: ["harden","gore","enrage","gore"],
+  },
+  hollow_king: {
+    name: "The Hollow King", emoji: "👑", maxHp: 92, boss: true,
+    moves: {
+      decree:  { name: "Royal Decree", selfStatus: { strength: 2 } },
+      smash:   { name: "Scepter Smash", attack: 12 },
+      drain:   { name: "Soul Drain", attack: 6, playerStatus: { weak: 2 } },
+      guard:   { name: "Hollow Guard", block: 11 },
+    },
+    pattern: ["decree","smash","drain","guard","smash"],
+  },
+};
+
+/* ---------------- LEVELS --------------------------------------------
+ * Each level is a list of battles; each battle is a list of enemy ids.
+ * To add Level 2: copy the Level 1 block, give it new enemies, and
+ * set locked: false. That's it — the map updates automatically.
+ * ------------------------------------------------------------------ */
+const LEVELS = [
+  {
+    name: "The Whispering Woods",
+    flavor: "Something has hollowed out the heart of the forest...",
+    locked: false,
+    battles: [
+      { name: "Forest Edge",     enemies: ["gloomcap","gloomcap"] },
+      { name: "Murky Pond",      enemies: ["bog_croaker","gloomcap"] },
+      { name: "Bramble Hollow",  enemies: ["thistle_imp","bramble_beast","thistle_imp"] },
+      { name: "The Hollow Throne", enemies: ["hollow_king"], boss: true },
+    ],
+  },
+  { name: "The Ember Caverns",  flavor: "Coming soon", locked: true },
+  { name: "The Skyspire Peaks", flavor: "Coming soon", locked: true },
+];
+
+/* =================================================================== *
+ *                                                                     *
+ *   ██████  GAME ENGINE — you can stop editing here :)  ██████        *
+ *                                                                     *
+ * =================================================================== */
+
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const rand = arr => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = arr => { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+let run = null;     // persistent across battles: hero, hp, deck, progress
+let bt = null;      // current battle state
+let busy = false;   // input locked during animations / enemy turn
+let pendingCard = null; // card waiting for a target click
+
+/* ---------- screen handling ---------- */
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+
+/* ---------- menu / hero select ---------- */
+function initMenu() {
+  $("menu-title").textContent = CONFIG.title;
+  $("menu-tagline").textContent = CONFIG.tagline;
+}
+
+function goHeroSelect() {
+  const grid = $("hero-grid");
+  grid.innerHTML = "";
+  for (const [id, h] of Object.entries(HEROES)) {
+    const el = document.createElement("div");
+    el.className = "hero-card";
+    el.innerHTML = `
+      <div class="portrait">${h.emoji}</div>
+      <h3>${h.name}</h3>
+      <div class="hero-title">${h.title}</div>
+      <div class="hero-hp">❤️ ${h.maxHp} HP</div>
+      <p class="desc">${h.desc}</p>`;
+    el.onclick = () => startRun(id);
+    grid.appendChild(el);
+  }
+  showScreen("screen-heroes");
+}
+
+/* ---------- run management ---------- */
+function startRun(heroId) {
+  const h = HEROES[heroId];
+  run = {
+    heroId, hero: h,
+    hp: h.maxHp, maxHp: h.maxHp,
+    deck: [...h.starterDeck],
+    levelIndex: 0, battleIndex: 0,
+    cardsAdded: 0,
+  };
+  goMap();
+}
+
+function goMap() {
+  const lvl = LEVELS[run.levelIndex];
+  $("map-title").textContent = `Level ${run.levelIndex + 1} — ${lvl.name}`;
+  $("map-sub").textContent = lvl.flavor;
+  $("map-stats").innerHTML =
+    `${run.hero.emoji} <b>${run.hero.name}</b> &nbsp; ❤️ <b>${run.hp}/${run.maxHp}</b> &nbsp; 🂠 Deck: <b>${run.deck.length}</b>`;
+
+  const row = $("node-row");
+  row.innerHTML = "";
+  lvl.battles.forEach((b, i) => {
+    if (i > 0) { const link = document.createElement("div"); link.className = "node-link"; row.appendChild(link); }
+    const node = document.createElement("div");
+    node.className = "map-node" + (i < run.battleIndex ? " done" : i === run.battleIndex ? " current" : "");
+    node.innerHTML = `<div>${b.boss ? "👑" : "⚔️"}</div><small>${i < run.battleIndex ? "WON" : b.boss ? "BOSS" : "FIGHT"}</small>`;
+    node.title = b.name;
+    if (i === run.battleIndex) node.onclick = startBattle;
+    row.appendChild(node);
+  });
+
+  const locked = $("locked-levels");
+  locked.innerHTML = "";
+  LEVELS.forEach((l, i) => {
+    if (l.locked) locked.innerHTML += `<div class="locked-level">🔒 Level ${i + 1} — ${l.name}</div>`;
+  });
+  showScreen("screen-map");
+}
+
+/* ---------- deck modal ---------- */
+function openDeckModal() {
+  const grid = $("deck-grid");
+  grid.innerHTML = "";
+  const sorted = [...run.deck].sort((a, b) => CARDS[a].cost - CARDS[b].cost || CARDS[a].name.localeCompare(CARDS[b].name));
+  sorted.forEach(id => grid.appendChild(makeCardEl(id, { mini: true })));
+  $("deck-modal-title").textContent = `YOUR DECK (${run.deck.length})`;
+  $("deck-modal").classList.add("open");
+}
+function closeDeckModal() { $("deck-modal").classList.remove("open"); }
+
+/* ---------- card element ---------- */
+function makeCardEl(cardId, opts = {}) {
+  const c = CARDS[cardId];
+  const el = document.createElement("div");
+  el.className = `card ${c.rarity === "uncommon" ? "uncommon" : ""} ${c.rarity === "rare" ? "rare" : ""} ${opts.mini ? "mini" : ""}`;
+  el.innerHTML = `
+    <div class="cost">${c.cost}</div>
+    <div class="art">${c.art}</div>
+    <div class="cname">${c.name}</div>
+    <div class="ctype">${c.type} · ${c.rarity}</div>
+    <div class="ctext">${c.desc}</div>`;
+  return el;
+}
+
+/* ---------- battle setup ---------- */
+function startBattle() {
+  const lvl = LEVELS[run.levelIndex];
+  const battle = lvl.battles[run.battleIndex];
+  bt = {
+    def: battle,
+    drawPile: shuffle(run.deck),
+    hand: [], discardPile: [], exhaustPile: [],
+    energy: CONFIG.energyPerTurn,
+    block: 0,
+    statuses: {},
+    turn: 1,
+    enemies: battle.enemies.map((eid, i) => {
+      const e = ENEMIES[eid];
+      return {
+        id: eid, idx: i, name: e.name, emoji: e.emoji, boss: !!e.boss,
+        hp: e.maxHp, maxHp: e.maxHp, block: 0, statuses: {},
+        patternIdx: 0, intent: e.moves[e.pattern[0]],
+      };
+    }),
+  };
+  $("battle-name").textContent = battle.name;
+  showScreen("screen-battle");
+  startPlayerTurn(true);
+}
+
+/* ---------- status helpers ---------- */
+function addStatus(holder, key, amount) {
+  holder.statuses[key] = (holder.statuses[key] || 0) + amount;
+}
+function tickDownStatuses(holder, keys) {
+  for (const k of keys) {
+    if (holder.statuses[k]) { holder.statuses[k]--; if (holder.statuses[k] <= 0) delete holder.statuses[k]; }
+  }
+}
+function statusChips(holder) {
+  return Object.entries(holder.statuses)
+    .map(([k, v]) => `<span class="chip" title="${STATUS_INFO[k].name}">${STATUS_INFO[k].emoji}${v}</span>`)
+    .join("");
+}
+
+/* ---------- damage math ---------- */
+function attackDamage(base, attacker, defender) {
+  let d = base + (attacker.statuses.strength || 0);
+  if (attacker.statuses.weak) d = Math.floor(d * 0.75);
+  if (defender.statuses.vulnerable) d = Math.floor(d * 1.5);
+  return Math.max(0, d);
+}
+// returns actual HP lost; piercing damage (poison/burn) ignores block
+function dealDamage(target, amount, piercing = false) {
+  let dmg = amount;
+  if (!piercing && target.block > 0) {
+    const absorbed = Math.min(target.block, dmg);
+    target.block -= absorbed;
+    dmg -= absorbed;
+  }
+  target.hp = Math.max(0, target.hp - dmg);
+  return dmg;
+}
+
+/* ---------- floating combat text ---------- */
+function floatText(anchor, text, cls) {
+  if (!anchor) return;
+  const r = anchor.getBoundingClientRect();
+  const el = document.createElement("div");
+  el.className = `float-text ${cls}`;
+  el.textContent = text;
+  el.style.left = (r.left + r.width / 2 - 20 + (Math.random() * 30 - 15)) + "px";
+  el.style.top = (r.top + r.height * 0.3) + "px";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+function enemyAnchor(i) { return document.querySelector(`#enemy-row .enemy[data-idx="${i}"]`); }
+function heroAnchor() { return $("hero-panel"); }
+
+function shake(el) {
+  if (!el) return;
+  el.classList.remove("hit");
+  void el.offsetWidth; // restart animation
+  el.classList.add("hit");
+}
+
+async function showBanner(text) {
+  const b = $("turn-banner");
+  b.textContent = text;
+  b.classList.remove("show");
+  void b.offsetWidth;
+  b.classList.add("show");
+  await sleep(700);
+}
+
+/* ---------- rendering ---------- */
+function describeIntent(en) {
+  const m = en.intent;
+  if (m.attack != null) {
+    const dmg = attackDamage(m.attack, en, { statuses: bt.statuses });
+    return `⚔️ ${dmg}${m.hits ? "×" + m.hits : ""}`;
+  }
+  if (m.block != null) return `🛡️ ${m.block}`;
+  if (m.selfStatus) return "💪 Powering up";
+  if (m.playerStatus) return "🌀 Casting a curse";
+  return "❓";
+}
+
+function renderBattle() {
+  // enemies
+  const row = $("enemy-row");
+  row.innerHTML = "";
+  bt.enemies.forEach((en, i) => {
+    const el = document.createElement("div");
+    el.className = `enemy ${en.boss ? "boss" : ""}`;
+    el.dataset.idx = i;
+    if (en.hp <= 0) {
+      el.innerHTML = `<div class="sprite" style="filter:grayscale(1);opacity:.35;">💀</div><div class="ename" style="opacity:.4;">${en.name}</div>`;
+    } else {
+      const needsTarget = pendingCard !== null;
+      if (needsTarget) el.classList.add("targetable");
+      el.innerHTML = `
+        <div class="intent">${describeIntent(en)}</div>
+        <div class="sprite">${en.emoji}</div>
+        <div class="ename">${en.name}</div>
+        <div class="hpbar"><div class="fill" style="width:${(en.hp / en.maxHp) * 100}%"></div>
+          <div class="hptext">${en.hp}/${en.maxHp}${en.block ? " 🛡️" + en.block : ""}</div></div>
+        <div class="status-row">${statusChips(en)}</div>`;
+      if (needsTarget) el.onclick = () => playPendingCardOn(i);
+    }
+    row.appendChild(el);
+  });
+
+  // hero
+  $("hero-panel").innerHTML = `
+    <div class="sprite">${run.hero.emoji}</div>
+    <div>
+      <div class="pname">${run.hero.name}${bt.block ? `<span class="block-badge">🛡️ ${bt.block}</span>` : ""}</div>
+      <div class="hpbar" style="width:150px;"><div class="fill" style="width:${(run.hp / run.maxHp) * 100}%"></div>
+        <div class="hptext">${run.hp}/${run.maxHp}</div></div>
+      <div class="status-row">${statusChips(bt)}</div>
+    </div>`;
+
+  // energy & piles
+  $("energy-orb").textContent = `${bt.energy}/${CONFIG.energyPerTurn}`;
+  $("draw-count").textContent = bt.drawPile.length;
+  $("discard-count").textContent = bt.discardPile.length;
+  $("end-turn-btn").disabled = busy;
+
+  // hand
+  const hand = $("hand");
+  hand.innerHTML = "";
+  bt.hand.forEach((cardId, i) => {
+    const c = CARDS[cardId];
+    const el = makeCardEl(cardId);
+    const playable = !busy && c.cost <= bt.energy;
+    if (!playable) el.classList.add("unplayable");
+    if (pendingCard && pendingCard.handIdx === i) el.classList.add("selected");
+    el.onclick = () => onCardClick(i);
+    hand.appendChild(el);
+  });
+
+  $("center-msg").textContent = pendingCard ? "Choose a target..." : "";
+}
+
+/* ---------- player turn ---------- */
+function drawCards(n) {
+  for (let i = 0; i < n; i++) {
+    if (bt.hand.length >= CONFIG.maxHandSize) break;
+    if (bt.drawPile.length === 0) {
+      if (bt.discardPile.length === 0) break;
+      bt.drawPile = shuffle(bt.discardPile);
+      bt.discardPile = [];
+    }
+    bt.hand.push(bt.drawPile.pop());
+  }
+}
+
+async function startPlayerTurn(first = false) {
+  busy = true;
+  pendingCard = null;
+  bt.block = 0;
+  bt.energy = CONFIG.energyPerTurn;
+  drawCards(CONFIG.handSize);
+  renderBattle();
+  await showBanner(first ? bt.def.name.toUpperCase() : "YOUR TURN");
+
+  // poison / burn / regen tick on the player (ignores Block)
+  for (const dot of ["poison", "burn"]) {
+    if (bt.statuses[dot]) {
+      run.hp = Math.max(0, run.hp - bt.statuses[dot]);
+      floatText(heroAnchor(), `-${bt.statuses[dot]}`, "dmg");
+      shake(heroAnchor());
+      bt.statuses[dot]--;
+      if (bt.statuses[dot] <= 0) delete bt.statuses[dot];
+      renderBattle();
+      await sleep(350);
+    }
+  }
+  if (bt.statuses.regen) {
+    run.hp = Math.min(run.maxHp, run.hp + bt.statuses.regen);
+    floatText(heroAnchor(), `+${bt.statuses.regen}`, "heal");
+    bt.statuses.regen--;
+    if (bt.statuses.regen <= 0) delete bt.statuses.regen;
+  }
+  if (run.hp <= 0) return defeat();
+
+  busy = false;
+  renderBattle();
+}
+
+/* ---------- playing cards ---------- */
+function onCardClick(handIdx) {
+  if (busy) return;
+  const cardId = bt.hand[handIdx];
+  const c = CARDS[cardId];
+  if (c.cost > bt.energy) return;
+
+  // toggle off if re-clicking the selected card
+  if (pendingCard && pendingCard.handIdx === handIdx) {
+    pendingCard = null;
+    renderBattle();
+    return;
+  }
+
+  const aliveEnemies = bt.enemies.filter(e => e.hp > 0);
+  const needsTarget = (c.fx.dmg != null || c.fx.enemyStatus) && !c.fx.aoe && aliveEnemies.length > 1;
+  if (needsTarget) {
+    pendingCard = { handIdx };
+    renderBattle();
+  } else {
+    const target = aliveEnemies.length ? bt.enemies.indexOf(aliveEnemies[0]) : -1;
+    playCard(handIdx, target);
+  }
+}
+
+function playPendingCardOn(enemyIdx) {
+  if (!pendingCard || busy) return;
+  const idx = pendingCard.handIdx;
+  pendingCard = null;
+  playCard(idx, enemyIdx);
+}
+
+async function playCard(handIdx, targetIdx) {
+  const cardId = bt.hand[handIdx];
+  const c = CARDS[cardId];
+  busy = true;
+  bt.energy -= c.cost;
+  bt.hand.splice(handIdx, 1);
+  (c.fx.exhaust ? bt.exhaustPile : bt.discardPile).push(cardId);
+
+  const fx = c.fx;
+  const targets = fx.aoe
+    ? bt.enemies.filter(e => e.hp > 0)
+    : (targetIdx >= 0 && bt.enemies[targetIdx] && bt.enemies[targetIdx].hp > 0 ? [bt.enemies[targetIdx]] : []);
+
+  // damage
+  if (fx.dmg != null) {
+    const hits = fx.hits || 1;
+    for (let h = 0; h < hits; h++) {
+      for (const en of targets) {
+        if (en.hp <= 0) continue;
+        const dmg = attackDamage(fx.dmg, bt, en);
+        dealDamage(en, dmg);
+        const anchor = enemyAnchor(bt.enemies.indexOf(en));
+        floatText(anchor, `-${dmg}`, "dmg");
+        shake(anchor);
+      }
+      renderBattle();
+      if (hits > 1) await sleep(220);
+    }
+  }
+  // enemy debuffs
+  if (fx.enemyStatus) {
+    for (const en of targets) {
+      if (en.hp <= 0) continue;
+      for (const [k, v] of Object.entries(fx.enemyStatus)) addStatus(en, k, v);
+      floatText(enemyAnchor(bt.enemies.indexOf(en)), Object.keys(fx.enemyStatus).map(k => STATUS_INFO[k].emoji).join(""), "stat");
+    }
+  }
+  // self effects
+  if (fx.block) { bt.block += fx.block; floatText(heroAnchor(), `+${fx.block}`, "blk"); }
+  if (fx.heal) {
+    const healed = Math.min(run.maxHp - run.hp, fx.heal);
+    run.hp += healed;
+    floatText(heroAnchor(), `+${healed}`, "heal");
+  }
+  if (fx.selfStatus) {
+    for (const [k, v] of Object.entries(fx.selfStatus)) addStatus(bt, k, v);
+    floatText(heroAnchor(), Object.keys(fx.selfStatus).map(k => STATUS_INFO[k].emoji).join(""), "stat");
+  }
+  if (fx.energy) bt.energy += fx.energy;
+  if (fx.draw) drawCards(fx.draw);
+
+  renderBattle();
+  await sleep(160);
+  busy = false;
+  renderBattle();
+  checkBattleEnd();
+}
+
+function checkBattleEnd() {
+  if (bt.enemies.every(e => e.hp <= 0)) { battleWon(); return true; }
+  return false;
+}
+
+/* ---------- enemy turn ---------- */
+async function endTurn() {
+  if (busy || !bt) return;
+  busy = true;
+  pendingCard = null;
+  bt.discardPile.push(...bt.hand);
+  bt.hand = [];
+  tickDownStatuses(bt, ["weak", "vulnerable"]);
+  renderBattle();
+  await showBanner("ENEMY TURN");
+
+  for (const en of bt.enemies) {
+    if (en.hp <= 0) continue;
+    en.block = 0;
+
+    // poison / burn tick on the enemy
+    for (const dot of ["poison", "burn"]) {
+      if (en.statuses[dot]) {
+        dealDamage(en, en.statuses[dot], true);
+        floatText(enemyAnchor(en.idx), `-${en.statuses[dot]}`, "dmg");
+        shake(enemyAnchor(en.idx));
+        en.statuses[dot]--;
+        if (en.statuses[dot] <= 0) delete en.statuses[dot];
+        renderBattle();
+        await sleep(320);
+      }
+    }
+    if (en.hp <= 0) { renderBattle(); continue; }
+
+    // perform the telegraphed intent
+    const m = en.intent;
+    await sleep(280);
+    if (m.attack != null) {
+      const hits = m.hits || 1;
+      for (let h = 0; h < hits; h++) {
+        const dmg = attackDamage(m.attack, en, bt);
+        let remaining = dmg;
+        if (bt.block > 0) {
+          const absorbed = Math.min(bt.block, remaining);
+          bt.block -= absorbed;
+          remaining -= absorbed;
+          if (absorbed) floatText(heroAnchor(), `🛡️-${absorbed}`, "blk");
+        }
+        if (remaining > 0) {
+          run.hp = Math.max(0, run.hp - remaining);
+          floatText(heroAnchor(), `-${remaining}`, "dmg");
+          shake(heroAnchor());
+        }
+        renderBattle();
+        if (hits > 1) await sleep(260);
+      }
+    }
+    if (m.block != null) { en.block += m.block; floatText(enemyAnchor(en.idx), `+${m.block}`, "blk"); }
+    if (m.selfStatus) {
+      for (const [k, v] of Object.entries(m.selfStatus)) addStatus(en, k, v);
+      floatText(enemyAnchor(en.idx), Object.keys(m.selfStatus).map(k => STATUS_INFO[k].emoji).join(""), "stat");
+    }
+    if (m.playerStatus) {
+      for (const [k, v] of Object.entries(m.playerStatus)) addStatus(bt, k, v);
+      floatText(heroAnchor(), Object.keys(m.playerStatus).map(k => STATUS_INFO[k].emoji).join(""), "stat");
+    }
+
+    tickDownStatuses(en, ["weak", "vulnerable"]);
+
+    // advance its pattern
+    const def = ENEMIES[en.id];
+    en.patternIdx = (en.patternIdx + 1) % def.pattern.length;
+    en.intent = def.moves[def.pattern[en.patternIdx]];
+
+    renderBattle();
+    if (run.hp <= 0) return defeat();
+    await sleep(380);
+  }
+
+  if (checkBattleEnd()) return;
+  bt.turn++;
+  startPlayerTurn();
+}
+
+/* ---------- battle end ---------- */
+function rollRewardCards() {
+  const pool = run.hero.cardPool;
+  const w = CONFIG.rewardRarityWeights;
+  const picks = [];
+  const available = [...pool];
+  while (picks.length < CONFIG.rewardChoices && available.length > 0) {
+    // weighted rarity roll, fall back to any card left
+    const total = w.common + w.uncommon + w.rare;
+    let roll = Math.random() * total;
+    const rarity = roll < w.common ? "common" : roll < w.common + w.uncommon ? "uncommon" : "rare";
+    const ofRarity = available.filter(id => CARDS[id].rarity === rarity);
+    const chosen = ofRarity.length ? rand(ofRarity) : rand(available);
+    picks.push(chosen);
+    available.splice(available.indexOf(chosen), 1);
+  }
+  return picks;
+}
+
+async function battleWon() {
+  busy = true;
+  await sleep(450);
+  // small heal after every battle
+  run.hp = Math.min(run.maxHp, run.hp + CONFIG.healAfterBattle);
+
+  const wasBoss = !!bt.def.boss;
+  run.battleIndex++;
+  bt = null;
+
+  if (wasBoss) {
+    $("victory-sub").textContent =
+      `${run.hero.name} ${run.hero.title} cleansed ${LEVELS[run.levelIndex].name} ` +
+      `with ${run.hp}/${run.maxHp} HP and ${run.deck.length} cards (${run.cardsAdded} collected).`;
+    showScreen("screen-victory");
+    return;
+  }
+
+  // card reward
+  const choices = rollRewardCards();
+  const box = $("reward-cards");
+  box.innerHTML = "";
+  choices.forEach(id => {
+    const el = makeCardEl(id);
+    el.onclick = () => { run.deck.push(id); run.cardsAdded++; goMap(); };
+    box.appendChild(el);
+  });
+  $("reward-sub").textContent = `Healed ${CONFIG.healAfterBattle} HP — now choose a card to add to your deck`;
+  $("reward-skip").textContent = `Skip (+${CONFIG.skipRewardHeal} HP)`;
+  showScreen("screen-reward");
+}
+
+function skipReward() {
+  run.hp = Math.min(run.maxHp, run.hp + CONFIG.skipRewardHeal);
+  goMap();
+}
+
+function defeat() {
+  const lvl = LEVELS[run.levelIndex];
+  $("defeat-sub").textContent =
+    `${run.hero.name} fell in ${lvl.battles[run.battleIndex].name} after collecting ${run.cardsAdded} cards.`;
+  bt = null;
+  showScreen("screen-defeat");
+}
+
+/* ---------- boot ---------- */
+initMenu();
+</script>
+</body>
+</html>
