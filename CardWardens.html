@@ -18,8 +18,8 @@
     --hp: #e34f4f;
     --block: #5fa8e8;
     --energy: #f5c542;
-    --common: #9aa3b2;
-    --uncommon: #5fa8e8;
+    --common: #8d97a8;
+    --uncommon: #4f9fe8;
     --rare: #e8c468;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -69,27 +69,29 @@
     color: var(--gold); letter-spacing: 4px; font-size: 13px;
   }
 
+  /* chunky cartoon mobile-game buttons */
   .btn {
-    font-family: inherit; cursor: pointer; color: #1d1505;
-    background: linear-gradient(180deg, #f3d588, #c89a3a);
-    border: 1px solid #8a6a1d; border-radius: 10px;
-    padding: 14px 44px; font-size: 20px; letter-spacing: 2px;
-    box-shadow: 0 4px 14px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.5);
-    transition: transform .12s, box-shadow .12s;
+    font-family: inherit; cursor: pointer; color: #3a2602; font-weight: bold;
+    background: linear-gradient(180deg, #ffe084 0%, #f5b93d 55%, #df9a18 100%);
+    border: 2px solid #8a5c10; border-bottom-width: 5px; border-radius: 14px;
+    padding: 13px 42px; font-size: 20px; letter-spacing: 2px;
+    box-shadow: 0 6px 14px rgba(0,0,0,.45), inset 0 2px 0 rgba(255,255,255,.55);
+    transition: transform .1s, box-shadow .1s, filter .1s;
+    text-shadow: 0 1px 0 rgba(255,255,255,.4);
   }
   @media (hover: hover) {
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(232,196,104,.35); }
+    .btn:hover { filter: brightness(1.07); transform: translateY(-2px); }
   }
-  .btn:active { transform: translateY(1px); }
-  .btn:disabled { opacity: .4; cursor: default; transform: none; }
+  .btn:active { transform: translateY(2px); border-bottom-width: 2px; }
+  .btn:disabled { opacity: .45; cursor: default; transform: none; filter: grayscale(.4); }
   .btn.secondary {
-    background: linear-gradient(180deg, #3b2f5e, #261d40);
-    color: #cfc4ea; border-color: #574a85;
+    background: linear-gradient(180deg, #4d3f78 0%, #382c5e 55%, #2a2048 100%);
+    color: #d8cdf2; border-color: #1d1535; text-shadow: none;
   }
   .menu-note { margin-top: 34px; color: #9c92b8; font-size: 14px; max-width: 460px; text-align: center; line-height: 1.5; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
 
   /* ---------- sprites (SVG art) ---------- */
-  .sprite { display: inline-block; line-height: 0; filter: drop-shadow(0 8px 10px rgba(0,0,0,.45)); will-change: transform; }
+  .sprite { display: inline-block; line-height: 0; filter: drop-shadow(0 8px 10px rgba(0,0,0,.35)); will-change: transform; }
   .sprite svg { width: 100%; height: 100%; }
   .sprite .emoji-art { line-height: 1.1; }
   .anim-bob    { animation: bob 2.6s ease-in-out infinite; transform-origin: 50% 100%; }
@@ -98,146 +100,214 @@
   @keyframes bob    { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
   @keyframes squish { 0%,100% { transform: scale(1.04,.94); } 50% { transform: scale(.96,1.06); } }
   @keyframes floaty { 0%,100% { transform: translateY(-4px); } 50% { transform: translateY(6px); } }
+  .shadow-oval { height: 12px; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,.4), transparent 70%); margin: -4px auto 0; }
 
   /* ---------- hero select ---------- */
   .hero-grid { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; margin-top: 26px; }
   .hero-card {
     width: 240px; background: linear-gradient(180deg, var(--panel-light), var(--panel));
-    border: 2px solid #4a3d75; border-radius: 16px; padding: 20px 16px;
+    border: 3px solid #4a3d75; border-bottom-width: 6px; border-radius: 18px; padding: 20px 16px;
     text-align: center; cursor: pointer; transition: transform .15s, border-color .15s, box-shadow .15s;
+    position: relative;
   }
   @media (hover: hover) {
-    .hero-card:hover { transform: translateY(-6px); border-color: var(--gold); box-shadow: 0 12px 30px rgba(232,196,104,.25); }
+    .hero-card:hover:not(.locked) { transform: translateY(-6px); border-color: var(--gold); box-shadow: 0 12px 30px rgba(232,196,104,.25); }
   }
-  .hero-card:active { border-color: var(--gold); }
-  .hero-card .sprite { width: 110px; height: 110px; }
+  .hero-card:active:not(.locked) { border-color: var(--gold); }
+  .hero-card .sprite { width: 120px; height: 120px; }
   .hero-card h3 { color: var(--gold); margin: 8px 0 2px; font-size: 21px; }
   .hero-card .hero-title { color: #b9aed6; font-size: 13px; font-style: italic; }
   .hero-card .hero-hp { margin: 10px 0 6px; color: var(--hp); font-size: 15px; }
   .hero-card p.desc { color: #cfc4ea; font-size: 13px; line-height: 1.45; min-height: 56px; }
-
-  /* ---------- map ---------- */
-  .map-panel { background: rgba(20,14,38,.78); border: 1px solid #4a3d75; border-radius: 18px; padding: 30px 40px; text-align: center; max-width: 720px; backdrop-filter: blur(3px); }
-  .map-title { color: var(--gold); font-size: 30px; letter-spacing: 2px; }
-  .map-sub { color: #b9aed6; font-style: italic; margin: 6px 0 24px; }
-  .node-row { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 26px; flex-wrap: wrap; }
-  .map-node {
-    width: 74px; height: 74px; border-radius: 50%; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; font-size: 26px;
-    background: var(--panel); border: 2px solid #4a3d75; color: #6f6390;
+  .hero-card.locked { cursor: default; filter: saturate(.25) brightness(.7); }
+  .hero-card.locked .lock-overlay {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(10,7,20,.55); border-radius: 15px; font-size: 44px; filter: none;
   }
-  .map-node small { font-size: 10px; font-family: sans-serif; letter-spacing: 1px; margin-top: 2px; }
-  .map-node.done { border-color: #4f8a4f; color: #7fd07f; background: #1d2b1d; }
-  .map-node.current { border-color: var(--gold); color: var(--gold); cursor: pointer; box-shadow: 0 0 22px rgba(232,196,104,.45); animation: pulse 1.6s infinite; }
-  .map-node.current:hover { transform: scale(1.08); }
-  .node-link { width: 26px; height: 2px; background: #4a3d75; }
-  @keyframes pulse { 0%,100% { box-shadow: 0 0 14px rgba(232,196,104,.35);} 50% { box-shadow: 0 0 30px rgba(232,196,104,.65);} }
-  .locked-levels { display: flex; gap: 14px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
-  .locked-level { border: 1px dashed #4a3d75; border-radius: 12px; padding: 10px 18px; color: #8d80b5; font-size: 13px; }
-  .locked-level.cleared { border-style: solid; border-color: #4f8a4f; color: #7fd07f; }
-  .run-stats { color: #cfc4ea; margin-bottom: 18px; font-size: 16px; }
-  .run-stats b { color: var(--gold); }
+  .hero-card.locked .lock-overlay small { font-size: 13px; color: #d8cdf2; letter-spacing: 2px; margin-top: 6px; font-family: sans-serif; }
 
-  /* ---------- battle layout ---------- */
-  #screen-battle { justify-content: space-between; padding: 0; }
+  /* ---------- adventure map (winding path) ---------- */
+  .map-wrap { width: min(420px, 94vw); text-align: center; }
+  .chapter-chip {
+    display: inline-block; background: rgba(20,14,38,.85); border: 2px solid var(--gold-dim);
+    border-radius: 24px; padding: 6px 22px; color: var(--gold); letter-spacing: 2px; font-size: 15px;
+  }
+  .map-title { color: #fff; font-size: 28px; letter-spacing: 1px; margin: 10px 0 2px; text-shadow: 0 2px 6px rgba(0,0,0,.7); }
+  .map-sub { color: #e8e0f8; font-style: italic; margin-bottom: 8px; text-shadow: 0 1px 4px rgba(0,0,0,.7); }
+  .map-board {
+    position: relative; height: 360px; margin: 8px 0 12px;
+    background: rgba(20,14,38,.55); border: 2px solid rgba(90,70,140,.6); border-radius: 20px;
+    backdrop-filter: blur(2px); overflow: hidden;
+  }
+  .map-board svg.path-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .map-node {
+    position: absolute; width: 64px; height: 64px; border-radius: 50%; transform: translate(-50%,-50%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 22px;
+    background: radial-gradient(circle at 35% 30%, #4d3f78, #2a2048); border: 3px solid #574a85; color: #9c92b8;
+  }
+  .map-node small { font-size: 9px; font-family: sans-serif; letter-spacing: 1px; }
+  .map-node.done { border-color: #4f8a4f; background: radial-gradient(circle at 35% 30%, #2e4d2e, #1d2b1d); color: #7fd07f; }
+  .map-node.current { border-color: var(--gold); color: var(--gold); cursor: pointer; animation: pulse 1.6s infinite; }
+  .map-node.current .sprite { width: 44px; height: 44px; }
+  .map-node.boss { width: 76px; height: 76px; font-size: 30px; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 14px rgba(232,196,104,.35);} 50% { box-shadow: 0 0 30px rgba(232,196,104,.75);} }
+  .run-stats {
+    display: flex; justify-content: center; gap: 16px; color: #fff; margin-bottom: 14px; font-size: 15px;
+    text-shadow: 0 1px 4px rgba(0,0,0,.8); flex-wrap: wrap;
+  }
+  .run-stats b { color: var(--gold); }
+  .next-areas { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+  .locked-level { border: 1px dashed rgba(140,120,200,.7); background: rgba(20,14,38,.5); border-radius: 12px; padding: 8px 14px; color: #cfc4ea; font-size: 12px; }
+  .locked-level.cleared { border-style: solid; border-color: #4f8a4f; color: #9fe09f; }
+
+  /* ---------- battle: full scene staging ---------- */
+  #screen-battle { justify-content: flex-start; padding: 0; overflow: hidden; }
   .battle-top {
     width: 100%; display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 22px; background: rgba(10,7,20,.6); border-bottom: 1px solid rgba(90,70,140,.5);
-    font-size: 15px; color: #b9aed6; backdrop-filter: blur(3px);
+    padding: 10px 18px; padding-top: max(10px, env(safe-area-inset-top));
+    font-size: 15px; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.8);
   }
-  .battle-top .bname { color: var(--gold); letter-spacing: 1px; font-size: 17px; }
-  .pile-info span { margin-left: 16px; }
+  .battle-top .bname {
+    background: rgba(10,7,20,.65); border: 2px solid rgba(90,70,140,.6); border-radius: 18px;
+    padding: 4px 18px; color: var(--gold); letter-spacing: 1px; font-size: 15px;
+  }
+  .gold-chip { background: rgba(10,7,20,.65); border: 2px solid rgba(170,134,47,.7); border-radius: 18px; padding: 4px 14px; font-family: sans-serif; font-size: 14px; color: #ffd966; }
 
-  .enemy-row { display: flex; gap: 30px; align-items: flex-end; justify-content: center; flex: 1; padding: 10px 20px 0; }
+  .battle-scene { position: relative; flex: 1; width: 100%; min-height: 0; }
+  .hero-spot { position: absolute; left: 4%; bottom: 4%; text-align: center; border-radius: 14px; padding: 4px; }
+  .hero-spot.hit { animation: shake .35s; }
+  .hero-spot .sprite { width: 130px; height: 169px; }
+  .hero-spot .pname { color: #fff; font-size: 14px; text-shadow: 0 1px 4px rgba(0,0,0,.9); font-family: sans-serif; font-weight: bold; }
+  .block-badge {
+    display: inline-flex; align-items: center; gap: 3px; background: rgba(20,50,90,.85); border: 1px solid #7ec0ff;
+    color: #cde7ff; border-radius: 10px; padding: 0 8px; font-family: sans-serif; font-size: 12px; margin-left: 5px;
+  }
+
+  .enemy-row { position: absolute; right: 3%; bottom: 4%; display: flex; gap: 14px; align-items: flex-end; }
   .enemy {
-    text-align: center; cursor: default; position: relative; padding: 10px 14px;
-    border-radius: 14px; border: 2px solid transparent; transition: border-color .15s, transform .1s; min-width: 130px;
+    text-align: center; cursor: default; position: relative; padding: 6px 8px;
+    border-radius: 14px; border: 2px solid transparent; transition: border-color .15s, transform .1s;
   }
-  .enemy.targetable { border-color: var(--gold); cursor: pointer; animation: pulse 1.4s infinite; background: rgba(232,196,104,.07); }
-  @media (hover: hover) {
-    .enemy.targetable:hover { transform: scale(1.06); }
-  }
-  .enemy .sprite { width: 92px; height: 92px; }
-  .enemy.boss .sprite { width: 150px; height: 150px; }
-  .enemy.hit .sprite { animation: shake .35s; filter: drop-shadow(0 8px 10px rgba(0,0,0,.45)) brightness(1.9) saturate(.6); }
+  .enemy.targetable { border-color: var(--gold); cursor: pointer; animation: pulse 1.4s infinite; background: rgba(232,196,104,.08); }
+  @media (hover: hover) { .enemy.targetable:hover { transform: scale(1.06); } }
+  .enemy .sprite { width: 104px; height: 104px; }
+  .enemy.boss .sprite { width: 168px; height: 168px; }
+  .enemy.hit .sprite { animation: shake .35s; filter: drop-shadow(0 8px 10px rgba(0,0,0,.35)) brightness(1.9) saturate(.6); }
   .enemy.lunge .sprite { animation: lunge .4s ease; }
   @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-9px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(4px)} }
-  @keyframes lunge { 0%{transform:translate(0,0)} 35%{transform:translate(-16px,12px) scale(1.06)} 100%{transform:translate(0,0)} }
+  @keyframes lunge { 0%{transform:translate(0,0)} 35%{transform:translate(-18px,10px) scale(1.06)} 100%{transform:translate(0,0)} }
   .enemy.dead .sprite { opacity: .25; filter: grayscale(1); transform: scaleY(.5); transform-origin: bottom; transition: all .5s ease; }
-  .enemy .ename { font-size: 14px; color: #fff; margin-top: 2px; text-shadow: 0 1px 3px rgba(0,0,0,.8); }
-  .intent { font-size: 14px; color: #ffc9c9; height: 22px; margin-bottom: 2px; font-family: sans-serif; text-shadow: 0 1px 3px rgba(0,0,0,.85); font-weight: bold; }
+  .enemy .ename { font-size: 12px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.85); font-family: sans-serif; font-weight: bold; }
 
-  .hpbar { width: 120px; height: 12px; background: #34122b; border: 1px solid #000; border-radius: 7px; margin: 4px auto 0; overflow: hidden; position: relative; }
-  .hpbar .fill { height: 100%; background: linear-gradient(180deg,#f06a6a,#b22a2a); transition: width .35s cubic-bezier(.2,.8,.3,1); }
-  .hpbar .hptext { position: absolute; inset: 0; font-size: 9px; font-family: sans-serif; color: #fff; display:flex; align-items:center; justify-content:center; text-shadow: 0 1px 2px #000; }
-  .status-row { height: 20px; margin-top: 4px; font-size: 12px; font-family: sans-serif; }
-  .chip { display: inline-block; background: rgba(0,0,0,.55); border-radius: 9px; padding: 1px 7px; margin: 0 2px; color: #ffd9a0; }
-
-  .player-row {
-    width: 100%; display: flex; align-items: center; justify-content: space-between;
-    padding: 6px 30px; gap: 18px;
+  /* intent speech bubble above enemy heads */
+  .intent-bubble {
+    display: inline-block; position: relative; margin-bottom: 8px;
+    background: rgba(255,255,255,.96); border: 2px solid #2a2048; border-radius: 12px;
+    padding: 2px 10px; font-family: sans-serif; font-weight: bold; font-size: 14px; color: #2a2048;
+    box-shadow: 0 3px 8px rgba(0,0,0,.4);
   }
-  .hero-panel { display: flex; align-items: center; gap: 14px; position: relative; padding: 8px 12px; border-radius: 14px; background: rgba(10,7,20,.45); }
-  .hero-panel.hit { animation: shake .35s; }
-  .hero-panel .sprite { width: 68px; height: 68px; }
-  .hero-panel .pname { color: var(--gold); font-size: 16px; text-shadow: 0 1px 3px rgba(0,0,0,.7); }
-  .block-badge { color: #9fd0ff; font-family: sans-serif; font-size: 13px; margin-left: 6px; }
+  .intent-bubble::after {
+    content: ""; position: absolute; left: 50%; bottom: -7px; transform: translateX(-50%);
+    border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 7px solid rgba(255,255,255,.96);
+  }
+  .intent-bubble.atk { color: #c22f1d; } .intent-bubble.def { color: #1d5fc2; }
+  .intent-bubble.buff { color: #8a2fc2; } .intent-bubble.curse { color: #1d7a3a; }
 
+  .hpbar {
+    width: 110px; height: 14px; background: #2a1020; border: 2px solid #14091f; border-radius: 9px;
+    margin: 3px auto 0; overflow: hidden; position: relative; box-shadow: inset 0 2px 3px rgba(0,0,0,.55);
+  }
+  .hpbar .fill { height: 100%; background: linear-gradient(180deg,#ff8a72,#d8462e 60%,#a82a18); transition: width .35s cubic-bezier(.2,.8,.3,1); border-radius: 5px; }
+  .hpbar .hptext { position: absolute; inset: 0; font-size: 9.5px; font-family: sans-serif; font-weight: bold; color: #fff; display:flex; align-items:center; justify-content:center; text-shadow: 0 1px 2px #000; }
+  .status-row { min-height: 20px; margin-top: 3px; font-size: 12px; font-family: sans-serif; }
+  .chip { display: inline-block; background: rgba(10,7,20,.7); border: 1px solid rgba(255,217,160,.4); border-radius: 9px; padding: 0 7px; margin: 0 2px; color: #ffd9a0; }
+
+  /* ---------- bottom: energy, piles, end turn, fanned hand ---------- */
+  .hand-area { position: relative; width: 100%; height: 236px; flex-shrink: 0; }
   .energy-orb {
-    width: 72px; height: 72px; border-radius: 50%; flex-shrink: 0;
-    background: radial-gradient(circle at 35% 30%, #ffe9a8, #d99c1e 60%, #7a5208);
-    border: 2px solid #8a6a1d; display: flex; align-items: center; justify-content: center;
-    font-size: 26px; color: #2a1d04; font-weight: bold; box-shadow: 0 0 24px rgba(245,197,66,.45);
+    position: absolute; left: 14px; bottom: 130px; z-index: 12;
+    width: 74px; height: 74px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffeeb0, #f0b428 55%, #9a6a08);
+    border: 3px solid #6e4c08; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 22px; color: #3a2602; font-weight: bold; box-shadow: 0 0 26px rgba(245,197,66,.5), 0 5px 10px rgba(0,0,0,.45);
     font-family: sans-serif; transition: box-shadow .3s;
   }
+  .energy-orb small { font-size: 8.5px; letter-spacing: 1px; }
   .energy-orb.spent { box-shadow: 0 0 6px rgba(245,197,66,.2); filter: saturate(.5) brightness(.8); }
+  #end-turn-btn {
+    position: absolute; right: 14px; bottom: 130px; z-index: 12;
+    padding: 14px 20px; font-size: 15px; border-radius: 40px;
+  }
+  .pile {
+    position: absolute; bottom: 8px; z-index: 12; font-size: 26px; line-height: 1;
+    background: rgba(10,7,20,.7); border: 2px solid rgba(90,70,140,.7); border-radius: 12px; padding: 7px 10px 4px;
+    color: #cfc4ea;
+  }
+  .pile .badge {
+    position: absolute; top: -8px; right: -8px; background: var(--gold); color: #3a2602;
+    font-family: sans-serif; font-weight: bold; font-size: 12px; border-radius: 10px; padding: 1px 7px;
+    border: 1px solid #8a5c10;
+  }
+  .pile.draw { left: 12px; } .pile.discard { right: 12px; }
 
-  /* ---------- hand ---------- */
-  .hand { display: flex; justify-content: center; align-items: flex-end; gap: 8px; width: 100%; min-height: 210px; padding: 4px 10px 14px; flex-wrap: nowrap; }
+  .hand { position: absolute; left: 0; right: 0; bottom: 0; height: 220px; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 12px; }
   .card {
-    width: 132px; height: 188px; border-radius: 12px; position: relative; flex-shrink: 1;
-    background: linear-gradient(180deg, #34295a 0%, #221a35 100%);
-    border: 2px solid var(--common); cursor: pointer; overflow: hidden;
-    transition: transform .16s cubic-bezier(.2,.8,.3,1.2), box-shadow .16s; text-align: center; padding: 8px 7px;
-    box-shadow: 0 6px 14px rgba(0,0,0,.55);
+    width: 122px; height: 172px; border-radius: 12px; position: relative; flex-shrink: 0;
+    margin: 0 -16px;
+    background: linear-gradient(180deg, #4a3a72 0%, #2a2048 100%);
+    border: 3px solid var(--common); cursor: pointer; overflow: hidden;
+    transform: rotate(var(--r, 0deg)) translateY(var(--y, 0px));
+    transform-origin: 50% 120%;
+    transition: transform .18s cubic-bezier(.2,.8,.3,1.15), box-shadow .18s;
+    text-align: center; box-shadow: 0 6px 14px rgba(0,0,0,.5);
     will-change: transform;
   }
   .card::before { /* glossy sheen */
     content: ""; position: absolute; top: 0; left: -80%; width: 60%; height: 100%;
     background: linear-gradient(100deg, transparent, rgba(255,255,255,.13), transparent);
-    transform: skewX(-20deg); pointer-events: none;
+    transform: skewX(-20deg); pointer-events: none; z-index: 3;
   }
   .card.uncommon { border-color: var(--uncommon); }
-  .card.rare { border-color: var(--rare); box-shadow: 0 6px 18px rgba(232,196,104,.3); }
-  .card.glow { box-shadow: 0 0 14px rgba(245,197,66,.35), 0 6px 14px rgba(0,0,0,.55); }
+  .card.rare { border-color: var(--rare); box-shadow: 0 6px 18px rgba(232,196,104,.35); }
+  .card.glow { box-shadow: 0 0 16px rgba(245,197,66,.4), 0 6px 14px rgba(0,0,0,.5); }
   @media (hover: hover) {
-    .card:hover { transform: translateY(-26px) scale(1.07); z-index: 5; box-shadow: 0 14px 30px rgba(0,0,0,.7); }
-    .card:hover::before { animation: sheen .7s ease; }
-    .card.unplayable:hover { transform: none; }
-    .card.mini:hover { transform: none; }
+    .hand .card:hover { transform: rotate(0deg) translateY(-48px) scale(1.13); z-index: 20; box-shadow: 0 16px 32px rgba(0,0,0,.65); }
+    .hand .card:hover::before { animation: sheen .7s ease; }
+    .card.unplayable:hover { transform: rotate(var(--r,0deg)) translateY(var(--y,0px)); }
     .reward-cards .card:hover { transform: translateY(-14px) scale(1.08); }
   }
   @keyframes sheen { from { left: -80%; } to { left: 120%; } }
-  .card.unplayable { filter: grayscale(.7) brightness(.65); cursor: default; }
-  .card.selected { transform: translateY(-30px) scale(1.1); border-color: #fff; z-index: 6; }
-  .card.dealt { animation: dealIn .3s cubic-bezier(.2,.8,.3,1.1) both; }
-  @keyframes dealIn { from { opacity: 0; transform: translateY(46px) rotate(4deg); } to { opacity: 1; transform: translateY(0) rotate(0); } }
+  .card.unplayable { filter: grayscale(.75) brightness(.6); cursor: default; }
+  .card.selected { transform: rotate(0deg) translateY(-52px) scale(1.16) !important; border-color: #fff; z-index: 21; }
+  .card.dealt { animation: dealIn .32s cubic-bezier(.2,.8,.3,1.1) both; }
+  @keyframes dealIn { from { opacity: 0; transform: translateY(60px) rotate(8deg); } to { opacity: 1; transform: translateY(0) rotate(var(--r,0deg)); } }
   .card .cost {
-    position: absolute; top: -10px; left: -10px; width: 32px; height: 32px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #ffe9a8, #d99c1e 65%, #7a5208);
-    border: 2px solid #8a6a1d; color: #2a1d04; font-weight: bold; font-family: sans-serif;
-    display: flex; align-items: center; justify-content: center; font-size: 16px;
+    position: absolute; top: 4px; left: 4px; width: 30px; height: 30px; border-radius: 50%; z-index: 4;
+    background: radial-gradient(circle at 35% 30%, #ffeeb0, #f0b428 60%, #9a6a08);
+    border: 2px solid #6e4c08; color: #3a2602; font-weight: bold; font-family: sans-serif;
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,.5);
   }
-  .card .art { font-size: 42px; margin-top: 8px; filter: drop-shadow(0 3px 6px rgba(0,0,0,.6)); }
-  .card .cname { font-size: 13px; color: var(--gold); margin-top: 4px; line-height: 1.15; }
-  .card .ctype { font-size: 9px; letter-spacing: 2px; color: #8d80b5; font-family: sans-serif; margin: 3px 0; text-transform: uppercase; }
-  .card .ctext { font-size: 11px; color: #ded5f0; line-height: 1.3; font-family: sans-serif; padding: 0 2px; }
-  .card.mini { width: 108px; height: 154px; cursor: default; }
-  .card.mini .art { font-size: 32px; }
-  .card.mini .cname { font-size: 11px; }
-  .card.mini .ctext { font-size: 9.5px; }
+  .card .art-window {
+    height: 46%; margin: 5px 5px 0; border-radius: 8px; border: 1px solid rgba(0,0,0,.4);
+    display: flex; align-items: center; justify-content: center; font-size: 40px;
+    background: radial-gradient(circle at 50% 35%, #6a5598, #3a2c62);
+    text-shadow: 0 3px 6px rgba(0,0,0,.5);
+  }
+  .card.t-attack .art-window { background: radial-gradient(circle at 50% 35%, #a8543a, #5e2418); }
+  .card.t-skill  .art-window { background: radial-gradient(circle at 50% 35%, #3a6ea8, #1d3a62); }
+  .card .cname {
+    font-size: 12.5px; color: #ffeec2; margin-top: 3px; line-height: 1.1; font-weight: bold;
+    background: linear-gradient(90deg, transparent, rgba(0,0,0,.4), transparent); padding: 2px 0;
+  }
+  .card .ctext { font-size: 10.5px; color: #e8e0f8; line-height: 1.25; font-family: sans-serif; padding: 2px 6px 0; }
+  .card .ctype { position: absolute; bottom: 3px; left: 0; right: 0; font-size: 8px; letter-spacing: 2px; color: #9c8fc5; font-family: sans-serif; text-transform: uppercase; }
+  .card.mini { width: 104px; height: 148px; cursor: default; margin: 0; transform: none; }
+  .card.mini .art-window { font-size: 30px; }
+  .card.mini .cname { font-size: 10.5px; }
+  .card.mini .ctext { font-size: 9px; }
 
-  .center-msg { min-height: 26px; color: var(--gold); font-style: italic; text-align: center; font-size: 16px; text-shadow: 0 1px 4px rgba(0,0,0,.8); }
+  .center-msg { position: absolute; left: 0; right: 0; top: -26px; min-height: 24px; color: #fff; font-style: italic; text-align: center; font-size: 15px; text-shadow: 0 1px 4px rgba(0,0,0,.9); z-index: 11; }
 
   /* turn banner */
   .turn-banner {
@@ -263,66 +333,59 @@
   @keyframes sparkFly { from { opacity: 1; transform: translate(0,0) scale(1); } to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.3); } }
 
   /* ---------- reward / end screens ---------- */
-  .reward-panel { text-align: center; background: rgba(20,14,38,.72); border-radius: 20px; padding: 30px 36px; backdrop-filter: blur(3px); }
+  .reward-panel { text-align: center; background: rgba(20,14,38,.8); border: 2px solid rgba(90,70,140,.7); border-radius: 22px; padding: 30px 36px; backdrop-filter: blur(3px); max-width: 94vw; }
   .reward-panel h2 { color: var(--gold); font-size: 38px; letter-spacing: 3px; }
   .reward-panel .rsub { color: #b9aed6; margin: 8px 0 26px; font-style: italic; }
   .reward-cards { display: flex; gap: 20px; justify-content: center; margin-bottom: 28px; flex-wrap: wrap; }
-  .reward-cards .card { cursor: pointer; }
+  .reward-cards .card { cursor: pointer; margin: 0; transform: none; }
   .end-emoji { font-size: 90px; margin-bottom: 10px; }
-  .end-emoji .sprite { width: 130px; height: 130px; }
+  .end-emoji .sprite { width: 130px; height: 169px; }
 
   /* deck modal */
   .modal-back { display: none; position: fixed; inset: 0; background: rgba(5,3,12,.85); z-index: 90; align-items: center; justify-content: center; }
   .modal-back.open { display: flex; }
-  .modal { background: var(--panel); border: 1px solid #574a85; border-radius: 16px; padding: 24px; max-width: 860px; max-height: 80vh; overflow-y: auto; text-align: center; }
+  .modal { background: var(--panel); border: 2px solid #574a85; border-radius: 18px; padding: 24px; max-width: 860px; max-height: 80vh; overflow-y: auto; text-align: center; }
   .modal h3 { color: var(--gold); margin-bottom: 16px; letter-spacing: 2px; }
   .deck-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 18px; }
 
   /* ---------- mobile layout ---------- */
   @media (max-width: 760px) {
-    #screen-battle { overflow-y: hidden; }
-    .battle-top { padding: 8px 12px; font-size: 12px; padding-top: max(8px, env(safe-area-inset-top)); }
-    .battle-top .bname { font-size: 14px; }
-    .pile-info span { margin-left: 8px; }
+    .battle-top { padding: 8px 10px; padding-top: max(8px, env(safe-area-inset-top)); }
+    .battle-top .bname { font-size: 12px; padding: 3px 12px; }
+    .gold-chip { font-size: 12px; padding: 3px 10px; }
 
-    .enemy-row { gap: 6px; padding: 4px 6px 0; flex-wrap: wrap; align-items: flex-end; }
-    .enemy { min-width: 96px; padding: 4px 6px; }
-    .enemy .sprite { width: 64px; height: 64px; }
-    .enemy.boss .sprite { width: 104px; height: 104px; }
-    .enemy .ename { font-size: 11px; }
-    .hpbar { width: 92px; }
+    .hero-spot { left: 2%; bottom: 2%; }
+    .hero-spot .sprite { width: 88px; height: 114px; }
+    .enemy-row { right: 2%; bottom: 2%; gap: 4px; }
+    .enemy { padding: 3px 4px; }
+    .enemy .sprite { width: 66px; height: 66px; }
+    .enemy.boss .sprite { width: 110px; height: 110px; }
+    .enemy .ename { font-size: 10px; }
+    .hpbar { width: 80px; height: 12px; }
+    .intent-bubble { font-size: 12px; padding: 1px 7px; margin-bottom: 5px; }
 
-    .player-row { padding: 4px 10px; gap: 8px; }
-    .hero-panel { gap: 8px; padding: 4px 6px; }
-    .hero-panel .sprite { width: 50px; height: 50px; }
-    .hero-panel .hpbar { width: 110px !important; }
-    .energy-orb { width: 54px; height: 54px; font-size: 19px; }
-    #end-turn-btn { padding: 12px 16px; font-size: 14px; letter-spacing: 1px; }
-
-    /* hand scrolls horizontally; cards stay finger-sized */
-    .hand {
-      min-height: 196px; padding: 34px 8px calc(10px + env(safe-area-inset-bottom));
-      overflow-x: auto; overflow-y: hidden; justify-content: flex-start;
-      -webkit-overflow-scrolling: touch; scrollbar-width: thin;
-    }
-    .card { width: 116px; height: 162px; flex-shrink: 0; }
-    .card:first-child { margin-left: auto; }
-    .card:last-child { margin-right: auto; }
-    .card .art { font-size: 34px; margin-top: 5px; }
-    .card .cname { font-size: 12px; } .card .ctext { font-size: 10px; }
-    .card.selected { transform: translateY(-22px) scale(1.06); }
+    .hand-area { height: 196px; }
+    .hand { height: 184px; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+    .card { width: 100px; height: 142px; margin: 0 -26px; }
+    .card .art-window { font-size: 30px; }
+    .card .cname { font-size: 10.5px; } .card .ctext { font-size: 9px; }
+    .card.selected { transform: rotate(0deg) translateY(-44px) scale(1.18) !important; }
+    .energy-orb { width: 58px; height: 58px; font-size: 17px; bottom: 116px; left: 8px; }
+    .energy-orb small { display: none; }
+    #end-turn-btn { bottom: 116px; right: 8px; padding: 11px 14px; font-size: 13px; }
+    .pile { font-size: 20px; padding: 5px 8px 3px; bottom: max(6px, env(safe-area-inset-bottom)); }
+    .pile.draw { left: 6px; } .pile.discard { right: 6px; }
 
     h1.game-title { letter-spacing: 3px; }
-    .map-panel { padding: 20px 14px; }
-    .map-node { width: 60px; height: 60px; font-size: 20px; }
-    .node-link { width: 14px; }
-    .btn { padding: 12px 26px; font-size: 17px; }
+    .map-board { height: 320px; }
+    .map-node { width: 56px; height: 56px; font-size: 19px; }
+    .map-node.boss { width: 68px; height: 68px; font-size: 26px; }
+    .btn { padding: 11px 24px; font-size: 16px; }
     .hero-card { width: min(86vw, 300px); }
     .hero-card p.desc { min-height: 0; }
-    .center-msg { font-size: 14px; min-height: 22px; }
     .turn-banner { font-size: 30px; letter-spacing: 3px; }
     .float-text { font-size: 21px; }
-    .reward-panel { padding: 20px 14px; }
+    .reward-panel { padding: 20px 12px; }
   }
 </style>
 </head>
@@ -335,10 +398,10 @@
 <div id="screen-menu" class="screen active">
   <h1 class="game-title" id="menu-title">CARD WARDENS</h1>
   <div class="subtitle" id="menu-tagline">Forge your deck. Guard the realms.</div>
-  <div class="demo-badge">DEMO &nbsp;·&nbsp; 2 AREAS</div>
+  <div class="demo-badge">DEMO &nbsp;·&nbsp; CHAPTERS 1–2</div>
   <button class="btn" onclick="goHeroSelect()">PLAY</button>
   <div class="menu-note">
-    Every hero, card, enemy and level in this game lives in the
+    Every hero, card, enemy and chapter in this game lives in the
     <b>GAME DATA</b> section at the top of this file — open it in any text
     editor and make it your own.
   </div>
@@ -351,38 +414,39 @@
   <div style="margin-top:26px;"><button class="btn secondary" onclick="showScreen('screen-menu')">Back</button></div>
 </div>
 
-<!-- ===================== MAP ===================== -->
+<!-- ===================== ADVENTURE MAP ===================== -->
 <div id="screen-map" class="screen">
-  <div class="map-panel">
+  <div class="map-wrap">
+    <div class="chapter-chip" id="map-chapter"></div>
     <div class="map-title" id="map-title"></div>
     <div class="map-sub" id="map-sub"></div>
     <div class="run-stats" id="map-stats"></div>
-    <div class="node-row" id="node-row"></div>
+    <div class="map-board" id="map-board"></div>
     <button class="btn" id="map-fight-btn" onclick="startBattle()">FIGHT</button>
-    <button class="btn secondary" onclick="openDeckModal()" style="margin-left:10px;">View Deck</button>
-    <div class="locked-levels" id="locked-levels"></div>
+    <button class="btn secondary" onclick="openDeckModal()" style="margin-left:10px;">Deck</button>
+    <div class="next-areas" id="locked-levels"></div>
   </div>
 </div>
 
 <!-- ===================== BATTLE ===================== -->
-<div id="screen-battle" class="screen" style="justify-content:space-between; padding:0;">
+<div id="screen-battle" class="screen">
   <div class="battle-top">
+    <div class="gold-chip" id="battle-gold">🪙 0</div>
     <div class="bname" id="battle-name"></div>
-    <div class="pile-info">
-      <span>🂠 Draw: <b id="draw-count">0</b></span>
-      <span>🗑️ Discard: <b id="discard-count">0</b></span>
-    </div>
+    <div class="gold-chip" id="battle-turn">Turn 1</div>
   </div>
-  <div class="enemy-row" id="enemy-row"></div>
-  <div class="center-msg" id="center-msg"></div>
-  <div class="player-row">
-    <div class="hero-panel" id="hero-panel"></div>
-    <div style="display:flex; align-items:center; gap:18px;">
-      <div class="energy-orb" id="energy-orb">3/3</div>
-      <button class="btn" id="end-turn-btn" onclick="endTurn()">END TURN</button>
-    </div>
+  <div class="battle-scene">
+    <div class="hero-spot" id="hero-panel"></div>
+    <div class="enemy-row" id="enemy-row"></div>
   </div>
-  <div class="hand" id="hand"></div>
+  <div class="hand-area">
+    <div class="center-msg" id="center-msg"></div>
+    <div class="energy-orb" id="energy-orb">3/3<small>ENERGY</small></div>
+    <button class="btn" id="end-turn-btn" onclick="endTurn()">END TURN</button>
+    <div class="pile draw" title="Draw pile">🂠<span class="badge" id="draw-count">0</span></div>
+    <div class="pile discard" title="Discard pile">🗑️<span class="badge" id="discard-count">0</span></div>
+    <div class="hand" id="hand"></div>
+  </div>
 </div>
 
 <!-- ===================== REWARD ===================== -->
@@ -406,11 +470,11 @@
   </div>
 </div>
 
-<!-- ===================== AREA CLEAR / VICTORY ===================== -->
+<!-- ===================== CHAPTER CLEAR / VICTORY ===================== -->
 <div id="screen-victory" class="screen">
   <div class="reward-panel">
     <div class="end-emoji" id="victory-emoji">🏆</div>
-    <h2 id="victory-title">AREA CLEAR!</h2>
+    <h2 id="victory-title">CHAPTER CLEAR!</h2>
     <div class="rsub" id="victory-sub"></div>
     <div id="victory-buttons" style="margin-top:24px;"></div>
   </div>
@@ -434,7 +498,7 @@
  *   ██████  GAME DATA — EDIT EVERYTHING BELOW  ██████                 *
  *                                                                     *
  *   This section is the whole game. Change names, numbers, art,      *
- *   add cards, heroes, enemies and levels — no engine knowledge      *
+ *   add cards, heroes, enemies and chapters — no engine knowledge    *
  *   needed. The engine below just reads this data.                   *
  *                                                                     *
  * =================================================================== */
@@ -448,7 +512,8 @@ const CONFIG = {
   rewardChoices: 3,        // cards offered after winning a battle
   skipRewardHeal: 6,       // HP healed if you skip the card reward
   healAfterBattle: 5,      // HP automatically healed after every battle
-  healBetweenAreas: 0.35,  // fraction of max HP restored when an area is cleared
+  healBetweenAreas: 0.35,  // fraction of max HP restored when a chapter is cleared
+  goldPerBattle: [8, 16],  // gold earned per battle (min, max) — shops coming soon!
   rewardRarityWeights: { common: 60, uncommon: 30, rare: 10 },
 };
 
@@ -458,21 +523,32 @@ const CONFIG = {
  * game falls back to the character's emoji automatically.
  * ------------------------------------------------------------------ */
 const ART = {
-  /* ---- Wardens ---- */
-  kaela: `<svg viewBox="0 0 100 100"><defs>
+  /* ---- Kaela, full-body battle sprite ---- */
+  kaela: `<svg viewBox="0 0 100 130"><defs>
     <radialGradient id="kmane" cx="50%" cy="42%"><stop offset="0%" stop-color="#ffb347"/><stop offset="70%" stop-color="#f07f1f"/><stop offset="100%" stop-color="#c2570e"/></radialGradient>
-    <linearGradient id="karm" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8c468"/><stop offset="100%" stop-color="#a8732a"/></linearGradient></defs>
-    <path d="M50 6 L58 18 L70 10 L72 25 L86 22 L81 37 L94 42 L82 51 L90 64 L75 64 L76 78 L63 71 L57 84 L50 73 L43 84 L37 71 L24 78 L25 64 L10 64 L18 51 L6 42 L19 37 L14 22 L28 25 L30 10 L42 18 Z" fill="url(#kmane)" stroke="#8e3d05" stroke-width="2.5"/>
-    <circle cx="50" cy="47" r="24" fill="#f6d7a0" stroke="#9c6b2e" stroke-width="2.5"/>
-    <path d="M30 44 Q33 30 46 28 Q40 36 39 46 Z" fill="#e8b97e"/><path d="M70 44 Q67 30 54 28 Q60 36 61 46 Z" fill="#e8b97e"/>
-    <circle cx="41" cy="45" r="4.4" fill="#43230a"/><circle cx="59" cy="45" r="4.4" fill="#43230a"/>
-    <circle cx="42.5" cy="43.5" r="1.5" fill="#fff"/><circle cx="60.5" cy="43.5" r="1.5" fill="#fff"/>
-    <path d="M36 38 L45 41" stroke="#43230a" stroke-width="2.4" stroke-linecap="round"/><path d="M64 38 L55 41" stroke="#43230a" stroke-width="2.4" stroke-linecap="round"/>
-    <path d="M46 54 Q50 58 54 54 L50 60 Z" fill="#b0571d"/>
-    <path d="M44 62 Q50 67 56 62" stroke="#43230a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M26 78 Q50 92 74 78 L74 100 L26 100 Z" fill="url(#karm)" stroke="#7a5208" stroke-width="2.5"/>
-    <path d="M44 84 L50 92 L56 84 L50 80 Z" fill="#d8401f" stroke="#7a1f08" stroke-width="2"/></svg>`,
+    <linearGradient id="karm" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe084"/><stop offset="100%" stop-color="#b07f24"/></linearGradient>
+    <linearGradient id="kblade" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f4f8ff"/><stop offset="100%" stop-color="#9fb4cc"/></linearGradient></defs>
+    <path d="M62 24 L94 10 L90 22 L97 28 L78 38" fill="url(#kblade)" stroke="#5e7088" stroke-width="2"/>
+    <rect x="58" y="26" width="16" height="7" rx="3" transform="rotate(-22 66 29)" fill="#8a5c10" stroke="#5e3c08" stroke-width="1.6"/>
+    <path d="M30 6 L36 14 L44 8 L46 18 L56 14 L55 24 L64 24 L58 32 L66 38 L56 40 L58 49 L48 45 L44 53 L38 46 L30 51 L29 41 L20 42 L25 33 L17 28 L26 24 L22 15 L32 17 Z" fill="url(#kmane)" stroke="#8e3d05" stroke-width="2.2"/>
+    <circle cx="42" cy="28" r="15" fill="#f6d7a0" stroke="#9c6b2e" stroke-width="2.2"/>
+    <circle cx="37" cy="27" r="2.8" fill="#43230a"/><circle cx="48" cy="27" r="2.8" fill="#43230a"/>
+    <circle cx="38" cy="26" r="1" fill="#fff"/><circle cx="49" cy="26" r="1" fill="#fff"/>
+    <path d="M33 22 L39 24" stroke="#43230a" stroke-width="1.8" stroke-linecap="round"/><path d="M52 22 L46 24" stroke="#43230a" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M39 34 Q42.5 37 46 34" stroke="#43230a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M28 52 Q14 60 16 84 Q22 88 28 86 Z" fill="#d8401f" stroke="#7a1f08" stroke-width="2"/>
+    <path d="M30 52 Q42 46 56 52 L62 88 Q44 96 26 88 Z" fill="url(#karm)" stroke="#7a5208" stroke-width="2.4"/>
+    <path d="M40 62 L46 70 L52 62 L46 57 Z" fill="#d8401f" stroke="#7a1f08" stroke-width="1.6"/>
+    <path d="M56 52 Q68 50 70 36 L62 32 Q58 44 52 50 Z" fill="url(#karm)" stroke="#7a5208" stroke-width="2"/>
+    <circle cx="68" cy="34" r="5.5" fill="#f6d7a0" stroke="#9c6b2e" stroke-width="1.8"/>
+    <path d="M28 60 Q18 64 14 74 L20 80 Q26 72 30 70 Z" fill="url(#karm)" stroke="#7a5208" stroke-width="2"/>
+    <circle cx="17" cy="77" r="5.5" fill="#f6d7a0" stroke="#9c6b2e" stroke-width="1.8"/>
+    <rect x="28" y="86" width="13" height="30" rx="5" fill="#7a3a14" stroke="#4a2008" stroke-width="2"/>
+    <rect x="47" y="86" width="13" height="30" rx="5" fill="#7a3a14" stroke="#4a2008" stroke-width="2"/>
+    <path d="M24 114 L43 114 L43 124 Q33 128 24 124 Z" fill="url(#karm)" stroke="#7a5208" stroke-width="2"/>
+    <path d="M45 114 L64 114 L64 124 Q54 128 45 124 Z" fill="url(#karm)" stroke="#7a5208" stroke-width="2"/></svg>`,
 
+  /* ---- Warden portraits (hero select) ---- */
   thorn: `<svg viewBox="0 0 100 100"><defs>
     <radialGradient id="tbody" cx="50%" cy="35%"><stop offset="0%" stop-color="#9b7653"/><stop offset="100%" stop-color="#5d4226"/></radialGradient>
     <linearGradient id="tleaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7fce5e"/><stop offset="100%" stop-color="#36842c"/></linearGradient></defs>
@@ -505,7 +581,7 @@ const ART = {
     <path d="M42 68 Q50 73 58 68" stroke="#0e4f58" stroke-width="2.4" fill="none" stroke-linecap="round"/>
     <path d="M55 22 L48 32 L54 32 L47 43 L58 30 L52 30 Z" fill="#ffe14d" stroke="#c79a08" stroke-width="1.4"/></svg>`,
 
-  /* ---- Slimes (Area 1) ---- */
+  /* ---- Slimes (Chapter 1) ---- */
   slime_green: `<svg viewBox="0 0 100 100"><defs>
     <radialGradient id="slg" cx="35%" cy="28%"><stop offset="0%" stop-color="#c8f88e"/><stop offset="55%" stop-color="#74d83c"/><stop offset="100%" stop-color="#3da81e"/></radialGradient></defs>
     <path d="M50 16 C76 16 89 44 87 64 C85 82 70 91 50 91 C30 91 15 82 13 64 C11 44 24 16 50 16 Z" fill="url(#slg)" stroke="#256e10" stroke-width="3"/>
@@ -556,7 +632,7 @@ const ART = {
     <path d="M40 72 Q50 80 60 72" stroke="#2a0a4e" stroke-width="3.4" fill="none" stroke-linecap="round"/>
     <circle cx="73" cy="40" r="4.5" fill="#caa0ee" opacity=".7"/><circle cx="22" cy="55" r="3.4" fill="#caa0ee" opacity=".7"/></svg>`,
 
-  /* ---- Forest dwellers (Area 2) ---- */
+  /* ---- Forest dwellers (Chapter 2) ---- */
   gloomcap: `<svg viewBox="0 0 100 100"><defs>
     <radialGradient id="gcap" cx="42%" cy="30%"><stop offset="0%" stop-color="#c977d8"/><stop offset="100%" stop-color="#6e2f8a"/></radialGradient></defs>
     <path d="M40 60 Q38 88 42 92 L58 92 Q62 88 60 60 Z" fill="#e8dcc0" stroke="#7a6a48" stroke-width="2.6"/>
@@ -620,11 +696,7 @@ const ART = {
     <path d="M34 52 Q30 64 34 78 M66 52 Q70 64 66 78" stroke="#564b78" stroke-width="2.4" fill="none"/></svg>`,
 };
 
-/* ---------------- WORLD THEMES (per-area backdrops) ----------------
- * sky:      body background class (defined in the CSS up top)
- * particle: "bubble" | "firefly" | "dust"
- * scenery:  SVG strip pinned to the bottom of the screen
- * ------------------------------------------------------------------ */
+/* ---------------- WORLD THEMES (per-chapter backdrops) -------------- */
 const THEMES = {
   void: { sky: "", particle: "dust", scenery: "" },
   meadow: {
@@ -656,14 +728,7 @@ const THEMES = {
   },
 };
 
-/* ---------------- STATUS EFFECTS (used by cards & enemies) ----------
- * strength:   +1 damage per stack on attacks (lasts all battle)
- * weak:       deal 25% less damage (1 stack fades each turn)
- * vulnerable: take 50% more damage (1 stack fades each turn)
- * poison:     lose stacks HP at start of turn, ignores Block (fades by 1)
- * burn:       same as poison, fiery flavour (fades by 1)
- * regen:      heal stacks HP at start of turn (fades by 1)
- * ------------------------------------------------------------------ */
+/* ---------------- STATUS EFFECTS ------------------------------------ */
 const STATUS_INFO = {
   strength:   { emoji: "💪", name: "Strength" },
   weak:       { emoji: "🌀", name: "Weak" },
@@ -673,18 +738,10 @@ const STATUS_INFO = {
   regen:      { emoji: "💚", name: "Regen" },
 };
 
-/* ---------------- CARDS --------------------------------------------
- * cost:   energy to play
- * type:   "attack" or "skill"  (just a label on the card)
- * rarity: "starter", "common", "uncommon" or "rare"
- * fx:     what the card does — any mix of:
- *   dmg: N        deal N damage          hits: N   ...N times
- *   aoe: true     damage/debuffs hit ALL enemies
- *   block: N      gain N Block           heal: N    restore N HP
- *   draw: N       draw N cards           energy: N  gain N energy
- *   enemyStatus: { poison: 3 }   apply to the target (or all if aoe)
- *   selfStatus:  { strength: 2 } apply to yourself
- *   exhaust: true the card is removed for the rest of the battle
+/* ---------------- CARDS ---------------------------------------------
+ * cost / type ("attack"|"skill") / rarity / fx:
+ *   dmg, hits, aoe, block, heal, draw, energy,
+ *   enemyStatus:{...}, selfStatus:{...}, exhaust
  * ------------------------------------------------------------------ */
 const CARDS = {
   /* ---- Kaela, the Flame Warden ---- */
@@ -700,7 +757,7 @@ const CARDS = {
   inferno:       { name: "Inferno",        cost: 3, type: "attack", rarity: "rare",     art: "🌋", desc: "Deal 20 damage.", fx: { dmg: 20 } },
   blazing_speed: { name: "Blazing Speed",  cost: 0, type: "skill",  rarity: "rare",     art: "💨", desc: "Gain 1 energy. Draw 2 cards. Exhaust.", fx: { energy: 1, draw: 2, exhaust: true } },
 
-  /* ---- Thorn, the Grove Warden ---- */
+  /* ---- Thorn, the Grove Warden (coming soon) ---- */
   thorn_whip:    { name: "Thorn Whip",     cost: 1, type: "attack", rarity: "starter",  art: "🌿", desc: "Deal 6 damage.", fx: { dmg: 6 } },
   bark_skin:     { name: "Bark Skin",      cost: 1, type: "skill",  rarity: "starter",  art: "🪵", desc: "Gain 5 Block.", fx: { block: 5 } },
   sap_sip:       { name: "Sap Sip",        cost: 1, type: "skill",  rarity: "starter",  art: "🍯", desc: "Heal 3 HP. Gain 3 Block.", fx: { heal: 3, block: 3 } },
@@ -713,7 +770,7 @@ const CARDS = {
   overgrowth:    { name: "Overgrowth",     cost: 3, type: "attack", rarity: "rare",     art: "🌲", desc: "Deal 10 damage and apply 3 Poison to ALL enemies.", fx: { dmg: 10, enemyStatus: { poison: 3 }, aoe: true } },
   heartwood:     { name: "Heartwood",      cost: 1, type: "skill",  rarity: "rare",     art: "💚", desc: "Heal 5 HP. Gain 5 Block. Draw 1 card.", fx: { heal: 5, block: 5, draw: 1 } },
 
-  /* ---- Zyra, the Storm Warden ---- */
+  /* ---- Zyra, the Storm Warden (coming soon) ---- */
   arc_jolt:      { name: "Arc Jolt",       cost: 1, type: "attack", rarity: "starter",  art: "⚡", desc: "Deal 6 damage.", fx: { dmg: 6 } },
   static_guard:  { name: "Static Guard",   cost: 1, type: "skill",  rarity: "starter",  art: "🛡️", desc: "Gain 5 Block.", fx: { block: 5 } },
   spark:         { name: "Spark",          cost: 0, type: "attack", rarity: "starter",  art: "✨", desc: "Deal 4 damage.", fx: { dmg: 4 } },
@@ -727,10 +784,9 @@ const CARDS = {
   eye_of_storm:  { name: "Eye of the Storm", cost: 2, type: "skill", rarity: "rare",    art: "👁️", desc: "Gain 12 Block. Draw 2 cards.", fx: { block: 12, draw: 2 } },
 };
 
-/* ---------------- HEROES (your Wardens) -----------------------------
- * art:         key into the ART library above (falls back to emoji)
- * starterDeck: card ids you begin every run with
- * cardPool:    cards that can appear as battle rewards
+/* ---------------- HEROES ---------------------------------------------
+ * locked: true shows the Warden as "coming soon" on the select screen.
+ * We're focusing on Kaela first — unlock the others whenever you like!
  * ------------------------------------------------------------------ */
 const HEROES = {
   kaela: {
@@ -741,14 +797,14 @@ const HEROES = {
     cardPool: ["twin_flames","ignite","molten_wall","searing_blade","flame_burst","phoenix_heart","inferno","blazing_speed"],
   },
   thorn: {
-    name: "Thorn", title: "the Grove Warden", emoji: "🦉", art: "thorn", maxHp: 85,
+    name: "Thorn", title: "the Grove Warden", emoji: "🦉", art: "thorn", maxHp: 85, locked: true,
     desc: "An ancient keeper of the deep woods. Outlasts enemies with poison, roots and regrowth.",
     starterDeck: ["thorn_whip","thorn_whip","thorn_whip","thorn_whip","thorn_whip",
                   "bark_skin","bark_skin","bark_skin","bark_skin","sap_sip"],
     cardPool: ["venom_lash","entangle","regrowth","iron_root","toxic_spores","natures_wrath","overgrowth","heartwood"],
   },
   zyra: {
-    name: "Zyra", title: "the Storm Warden", emoji: "🐉", art: "zyra", maxHp: 75,
+    name: "Zyra", title: "the Storm Warden", emoji: "🐉", art: "zyra", maxHp: 75, locked: true,
     desc: "A lightning-touched duelist. Fragile, but cycles cards and energy faster than any storm.",
     starterDeck: ["arc_jolt","arc_jolt","arc_jolt","arc_jolt","arc_jolt",
                   "static_guard","static_guard","static_guard","static_guard","spark"],
@@ -756,18 +812,9 @@ const HEROES = {
   },
 };
 
-/* ---------------- ENEMIES -------------------------------------------
- * art:  key into the ART library (falls back to emoji)
- * anim: idle animation — "squish" (slimes), "bob" or "float"
- * moves: things the enemy can do —
- *   { attack: N }  / { attack: N, hits: 2 }   hit you
- *   { block: N }                              protect itself
- *   { selfStatus: { strength: 2 } }           buff itself
- *   { playerStatus: { weak: 2 } }             debuff you
- * pattern: the order it uses its moves (loops forever)
- * ------------------------------------------------------------------ */
+/* ---------------- ENEMIES ------------------------------------------- */
 const ENEMIES = {
-  /* ---- Area 1: slimes ---- */
+  /* ---- Chapter 1: slimes ---- */
   gloop: {
     name: "Gloop", emoji: "🟢", art: "slime_green", anim: "squish", maxHp: 13,
     moves: {
@@ -812,7 +859,7 @@ const ENEMIES = {
     pattern: ["grow","royal_bounce","sticky_spit","gel_armor","royal_bounce"],
   },
 
-  /* ---- Area 2: the Whispering Woods ---- */
+  /* ---- Chapter 2: the Whispering Woods ---- */
   gloomcap: {
     name: "Gloomcap Sprout", emoji: "🍄", art: "gloomcap", anim: "bob", maxHp: 16,
     moves: {
@@ -859,12 +906,7 @@ const ENEMIES = {
   },
 };
 
-/* ---------------- LEVELS --------------------------------------------
- * Each level is a list of battles; each battle is a list of enemy ids.
- * theme picks the backdrop from THEMES above. To add an area: copy a
- * block, fill in new enemies, set locked: false — the map updates
- * automatically and the run continues from one area into the next.
- * ------------------------------------------------------------------ */
+/* ---------------- CHAPTERS ------------------------------------------ */
 const LEVELS = [
   {
     name: "The Slime Meadows",
@@ -904,9 +946,10 @@ const LEVELS = [
 const $ = id => document.getElementById(id);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const rand = arr => arr[Math.floor(Math.random() * arr.length)];
+const randInt = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 const shuffle = arr => { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
-let run = null;     // persistent across battles: hero, hp, deck, progress
+let run = null;     // persistent across battles: hero, hp, deck, gold, progress
 let bt = null;      // current battle state
 let busy = false;   // input locked during animations / enemy turn
 let pendingCard = null; // selected card: { handIdx, needsTarget }
@@ -918,7 +961,6 @@ const IS_TOUCH = window.matchMedia
 
 /* ---------- art & theme helpers ---------- */
 function spriteHTML(holder, sizeEm) {
-  // holder has { art, emoji } — use the SVG if it exists, emoji otherwise
   if (holder.art && ART[holder.art]) return ART[holder.art];
   return `<span class="emoji-art" style="font-size:${sizeEm || 48}px;">${holder.emoji || "❓"}</span>`;
 }
@@ -966,14 +1008,15 @@ function goHeroSelect() {
   grid.innerHTML = "";
   for (const [id, h] of Object.entries(HEROES)) {
     const el = document.createElement("div");
-    el.className = "hero-card";
+    el.className = "hero-card" + (h.locked ? " locked" : "");
     el.innerHTML = `
       <div class="sprite anim-bob">${spriteHTML(h, 80)}</div>
       <h3>${h.name}</h3>
       <div class="hero-title">${h.title}</div>
       <div class="hero-hp">❤️ ${h.maxHp} HP</div>
-      <p class="desc">${h.desc}</p>`;
-    el.onclick = () => startRun(id);
+      <p class="desc">${h.desc}</p>
+      ${h.locked ? `<div class="lock-overlay">🔒<small>COMING SOON</small></div>` : ""}`;
+    if (!h.locked) el.onclick = () => startRun(id);
     grid.appendChild(el);
   }
   showScreen("screen-heroes");
@@ -987,36 +1030,60 @@ function startRun(heroId) {
     hp: h.maxHp, maxHp: h.maxHp,
     deck: [...h.starterDeck],
     levelIndex: 0, battleIndex: 0,
-    cardsAdded: 0,
+    cardsAdded: 0, gold: 0,
   };
   goMap();
 }
 
+/* winding adventure path: nodes zigzag down the board */
 function goMap() {
   const lvl = LEVELS[run.levelIndex];
   setTheme(lvl.theme);
-  $("map-title").textContent = `Area ${run.levelIndex + 1} — ${lvl.name}`;
+  $("map-chapter").textContent = `CHAPTER ${run.levelIndex + 1}`;
+  $("map-title").textContent = lvl.name;
   $("map-sub").textContent = lvl.flavor;
   $("map-stats").innerHTML =
-    `${run.hero.emoji} <b>${run.hero.name}</b> &nbsp; ❤️ <b>${run.hp}/${run.maxHp}</b> &nbsp; 🂠 Deck: <b>${run.deck.length}</b>`;
+    `<span>❤️ <b>${run.hp}/${run.maxHp}</b></span>
+     <span>🂠 <b>${run.deck.length}</b> cards</span>
+     <span>🪙 <b>${run.gold}</b></span>`;
 
-  const row = $("node-row");
-  row.innerHTML = "";
+  const board = $("map-board");
+  const n = lvl.battles.length;
+  // zigzag positions top→bottom (percentages of the board)
+  const pts = lvl.battles.map((b, i) => ({
+    x: i % 2 === 0 ? 30 : 70,
+    y: 12 + (76 * i) / Math.max(1, n - 1),
+  }));
+  let path = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i = 1; i < pts.length; i++) {
+    const mx = (pts[i - 1].x + pts[i].x) / 2;
+    path += ` Q ${mx} ${(pts[i - 1].y + pts[i].y) / 2 - 6} ${pts[i].x} ${pts[i].y}`;
+  }
+  board.innerHTML = `
+    <svg class="path-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <path d="${path}" fill="none" stroke="rgba(232,196,104,.55)" stroke-width="1.6" stroke-dasharray="3 3" stroke-linecap="round"/>
+    </svg>`;
   lvl.battles.forEach((b, i) => {
-    if (i > 0) { const link = document.createElement("div"); link.className = "node-link"; row.appendChild(link); }
     const node = document.createElement("div");
-    node.className = "map-node" + (i < run.battleIndex ? " done" : i === run.battleIndex ? " current" : "");
-    node.innerHTML = `<div>${b.boss ? "👑" : "⚔️"}</div><small>${i < run.battleIndex ? "WON" : b.boss ? "BOSS" : "FIGHT"}</small>`;
+    node.className = "map-node" + (b.boss ? " boss" : "") +
+      (i < run.battleIndex ? " done" : i === run.battleIndex ? " current" : "");
+    node.style.left = pts[i].x + "%";
+    node.style.top = pts[i].y + "%";
     node.title = b.name;
-    if (i === run.battleIndex) node.onclick = startBattle;
-    row.appendChild(node);
+    if (i === run.battleIndex) {
+      node.innerHTML = `<div class="sprite">${spriteHTML(run.hero, 30)}</div>`;
+      node.onclick = startBattle;
+    } else {
+      node.innerHTML = `<div>${i < run.battleIndex ? "✓" : b.boss ? "👑" : "⚔️"}</div><small>${i < run.battleIndex ? "" : b.boss ? "BOSS" : "FIGHT"}</small>`;
+    }
+    board.appendChild(node);
   });
 
   const locked = $("locked-levels");
   locked.innerHTML = "";
   LEVELS.forEach((l, i) => {
-    if (i < run.levelIndex) locked.innerHTML += `<div class="locked-level cleared">✔ Area ${i + 1} — ${l.name}</div>`;
-    else if (i > run.levelIndex) locked.innerHTML += `<div class="locked-level">${l.locked ? "🔒" : "→"} Area ${i + 1} — ${l.name}</div>`;
+    if (i < run.levelIndex) locked.innerHTML += `<div class="locked-level cleared">✔ Ch.${i + 1} ${l.name}</div>`;
+    else if (i > run.levelIndex) locked.innerHTML += `<div class="locked-level">${l.locked ? "🔒" : "→"} Ch.${i + 1} ${l.name}</div>`;
   });
   showScreen("screen-map");
 }
@@ -1036,13 +1103,13 @@ function closeDeckModal() { $("deck-modal").classList.remove("open"); }
 function makeCardEl(cardId, opts = {}) {
   const c = CARDS[cardId];
   const el = document.createElement("div");
-  el.className = `card ${c.rarity === "uncommon" ? "uncommon" : ""} ${c.rarity === "rare" ? "rare" : ""} ${opts.mini ? "mini" : ""}`;
+  el.className = `card t-${c.type} ${c.rarity === "uncommon" ? "uncommon" : ""} ${c.rarity === "rare" ? "rare" : ""} ${opts.mini ? "mini" : ""}`;
   el.innerHTML = `
     <div class="cost">${c.cost}</div>
-    <div class="art">${c.art}</div>
+    <div class="art-window">${c.art}</div>
     <div class="cname">${c.name}</div>
-    <div class="ctype">${c.type} · ${c.rarity}</div>
-    <div class="ctext">${c.desc}</div>`;
+    <div class="ctext">${c.desc}</div>
+    <div class="ctype">${c.type} · ${c.rarity}</div>`;
   return el;
 }
 
@@ -1095,7 +1162,7 @@ function attackDamage(base, attacker, defender) {
   if (defender.statuses.vulnerable) d = Math.floor(d * 1.5);
   return Math.max(0, d);
 }
-// returns actual HP lost; piercing damage (poison/burn) ignores block
+// piercing damage (poison/burn) ignores block
 function dealDamage(target, amount, piercing = false) {
   let dmg = amount;
   if (!piercing && target.block > 0) {
@@ -1159,12 +1226,12 @@ function describeIntent(en) {
   const m = en.intent;
   if (m.attack != null) {
     const dmg = attackDamage(m.attack, en, { statuses: bt.statuses });
-    return `⚔️ ${dmg}${m.hits ? "×" + m.hits : ""}`;
+    return { cls: "atk", text: `⚔️ ${dmg}${m.hits ? "×" + m.hits : ""}` };
   }
-  if (m.block != null) return `🛡️ ${m.block}`;
-  if (m.selfStatus) return "💪 Powering up";
-  if (m.playerStatus) return "🌀 Casting a curse";
-  return "❓";
+  if (m.block != null) return { cls: "def", text: `🛡️ ${m.block}` };
+  if (m.selfStatus) return { cls: "buff", text: "💪 UP" };
+  if (m.playerStatus) return { cls: "curse", text: "🌀 HEX" };
+  return { cls: "", text: "❓" };
 }
 
 function renderBattle(opts = {}) {
@@ -1177,13 +1244,15 @@ function renderBattle(opts = {}) {
     el.dataset.idx = i;
     if (en.hp <= 0) {
       el.classList.add("dead");
-      el.innerHTML = `<div class="sprite">${spriteHTML(en, 56)}</div><div class="ename" style="opacity:.4;">${en.name}</div>`;
+      el.innerHTML = `<div class="sprite">${spriteHTML(en, 56)}</div><div class="shadow-oval" style="width:60px;"></div>`;
     } else {
       const needsTarget = pendingCard !== null && pendingCard.needsTarget;
       if (needsTarget) el.classList.add("targetable");
+      const intent = describeIntent(en);
       el.innerHTML = `
-        <div class="intent">${describeIntent(en)}</div>
+        <div><span class="intent-bubble ${intent.cls}">${intent.text}</span></div>
         <div class="sprite anim-${en.anim}">${spriteHTML(en, 64)}</div>
+        <div class="shadow-oval" style="width:${en.boss ? 120 : 76}px;"></div>
         <div class="ename">${en.name}</div>
         <div class="hpbar"><div class="fill" style="width:${(en.hp / en.maxHp) * 100}%"></div>
           <div class="hptext">${en.hp}/${en.maxHp}${en.block ? " 🛡️" + en.block : ""}</div></div>
@@ -1193,30 +1262,39 @@ function renderBattle(opts = {}) {
     row.appendChild(el);
   });
 
-  // hero
+  // hero on the field
   $("hero-panel").innerHTML = `
-    <div class="sprite anim-bob">${spriteHTML(run.hero, 48)}</div>
-    <div>
-      <div class="pname">${run.hero.name}${bt.block ? `<span class="block-badge">🛡️ ${bt.block}</span>` : ""}</div>
-      <div class="hpbar" style="width:150px;"><div class="fill" style="width:${(run.hp / run.maxHp) * 100}%"></div>
-        <div class="hptext">${run.hp}/${run.maxHp}</div></div>
-      <div class="status-row">${statusChips(bt)}</div>
-    </div>`;
+    <div class="sprite anim-bob">${spriteHTML(run.hero, 64)}</div>
+    <div class="shadow-oval" style="width:96px;"></div>
+    <div class="pname">${run.hero.name}${bt.block ? `<span class="block-badge">🛡️${bt.block}</span>` : ""}</div>
+    <div class="hpbar" style="width:130px;"><div class="fill" style="width:${(run.hp / run.maxHp) * 100}%"></div>
+      <div class="hptext">${run.hp}/${run.maxHp}</div></div>
+    <div class="status-row">${statusChips(bt)}</div>`;
+
+  // top bar
+  $("battle-gold").textContent = `🪙 ${run.gold}`;
+  $("battle-turn").textContent = `Turn ${bt.turn}`;
 
   // energy & piles
   const orb = $("energy-orb");
-  orb.textContent = `${bt.energy}/${CONFIG.energyPerTurn}`;
+  orb.innerHTML = `${bt.energy}/${CONFIG.energyPerTurn}<small>ENERGY</small>`;
   orb.classList.toggle("spent", bt.energy === 0);
   $("draw-count").textContent = bt.drawPile.length;
   $("discard-count").textContent = bt.discardPile.length;
   $("end-turn-btn").disabled = busy;
 
-  // hand
+  // fanned hand
   const hand = $("hand");
   hand.innerHTML = "";
+  const n = bt.hand.length;
+  const spread = n > 1 ? Math.min(36, n * 7) : 0;
   bt.hand.forEach((cardId, i) => {
     const c = CARDS[cardId];
     const el = makeCardEl(cardId);
+    const angle = n > 1 ? -spread / 2 + (spread * i) / (n - 1) : 0;
+    el.style.setProperty("--r", angle.toFixed(2) + "deg");
+    el.style.setProperty("--y", (Math.abs(angle) * 1.6).toFixed(1) + "px");
+    el.style.zIndex = i + 1;
     const playable = !busy && c.cost <= bt.energy;
     if (!playable) el.classList.add("unplayable");
     else el.classList.add("glow");
@@ -1333,7 +1411,6 @@ async function playCard(handIdx, targetIdx) {
     ? bt.enemies.filter(e => e.hp > 0)
     : (targetIdx >= 0 && bt.enemies[targetIdx] && bt.enemies[targetIdx].hp > 0 ? [bt.enemies[targetIdx]] : []);
 
-  // damage
   if (fx.dmg != null) {
     const hits = fx.hits || 1;
     for (let h = 0; h < hits; h++) {
@@ -1350,7 +1427,6 @@ async function playCard(handIdx, targetIdx) {
       if (hits > 1) await sleep(220);
     }
   }
-  // enemy debuffs
   if (fx.enemyStatus) {
     for (const en of targets) {
       if (en.hp <= 0) continue;
@@ -1358,7 +1434,6 @@ async function playCard(handIdx, targetIdx) {
       floatText(enemyAnchor(bt.enemies.indexOf(en)), Object.keys(fx.enemyStatus).map(k => STATUS_INFO[k].emoji).join(""), "stat");
     }
   }
-  // self effects
   if (fx.block) { bt.block += fx.block; floatText(heroAnchor(), `+${fx.block}`, "blk"); burst(heroAnchor(), "#5fa8e8"); }
   if (fx.heal) {
     const healed = Math.min(run.maxHp - run.hp, fx.heal);
@@ -1400,7 +1475,6 @@ async function endTurn() {
     if (en.hp <= 0) continue;
     en.block = 0;
 
-    // poison / burn tick on the enemy
     for (const dot of ["poison", "burn"]) {
       if (en.statuses[dot]) {
         dealDamage(en, en.statuses[dot], true);
@@ -1415,7 +1489,6 @@ async function endTurn() {
     }
     if (en.hp <= 0) { renderBattle(); continue; }
 
-    // perform the telegraphed intent
     const m = en.intent;
     await sleep(280);
     if (m.attack != null) {
@@ -1453,7 +1526,6 @@ async function endTurn() {
 
     tickDownStatuses(en, ["weak", "vulnerable"]);
 
-    // advance its pattern
     const def = ENEMIES[en.id];
     en.patternIdx = (en.patternIdx + 1) % def.pattern.length;
     en.intent = def.moves[def.pattern[en.patternIdx]];
@@ -1475,7 +1547,6 @@ function rollRewardCards() {
   const picks = [];
   const available = [...pool];
   while (picks.length < CONFIG.rewardChoices && available.length > 0) {
-    // weighted rarity roll, fall back to any card left
     const total = w.common + w.uncommon + w.rare;
     let roll = Math.random() * total;
     const rarity = roll < w.common ? "common" : roll < w.common + w.uncommon ? "uncommon" : "rare";
@@ -1495,8 +1566,9 @@ function nextUnlockedLevel() {
 async function battleWon() {
   busy = true;
   await sleep(450);
-  // small heal after every battle
   run.hp = Math.min(run.maxHp, run.hp + CONFIG.healAfterBattle);
+  const goldWon = randInt(CONFIG.goldPerBattle[0], CONFIG.goldPerBattle[1]);
+  run.gold += goldWon;
 
   const wasBoss = !!bt.def.boss;
   run.battleIndex++;
@@ -1506,18 +1578,18 @@ async function battleWon() {
     const clearedLevel = LEVELS[run.levelIndex];
     const next = nextUnlockedLevel();
     if (next) {
-      $("victory-emoji").innerHTML = `<div class="sprite anim-bob" style="width:130px;height:130px;">${spriteHTML(run.hero, 90)}</div>`;
-      $("victory-title").textContent = "AREA CLEAR!";
+      $("victory-emoji").innerHTML = `<div class="sprite anim-bob" style="width:130px;height:169px;">${spriteHTML(run.hero, 90)}</div>`;
+      $("victory-title").textContent = "CHAPTER CLEAR!";
       $("victory-sub").textContent =
         `${clearedLevel.name} is safe! The road ahead leads to ${next.name}...`;
       $("victory-buttons").innerHTML =
         `<button class="btn" onclick="continueToNextLevel()">CONTINUE →</button>`;
     } else {
       $("victory-emoji").textContent = "🏆";
-      $("victory-title").textContent = "ALL AREAS CLEAR!";
+      $("victory-title").textContent = "ALL CHAPTERS CLEAR!";
       $("victory-sub").textContent =
         `${run.hero.name} ${run.hero.title} saved the realms with ` +
-        `${run.hp}/${run.maxHp} HP and ${run.deck.length} cards (${run.cardsAdded} collected).`;
+        `${run.hp}/${run.maxHp} HP, ${run.deck.length} cards and 🪙 ${run.gold} gold.`;
       $("victory-buttons").innerHTML =
         `<button class="btn" onclick="goHeroSelect()">PLAY AGAIN</button>
          <button class="btn secondary" onclick="showScreen('screen-menu')" style="margin-left:10px;">Menu</button>`;
@@ -1526,7 +1598,6 @@ async function battleWon() {
     return;
   }
 
-  // card reward
   const choices = rollRewardCards();
   const box = $("reward-cards");
   box.innerHTML = "";
@@ -1535,7 +1606,7 @@ async function battleWon() {
     el.onclick = () => { run.deck.push(id); run.cardsAdded++; goMap(); };
     box.appendChild(el);
   });
-  $("reward-sub").textContent = `Healed ${CONFIG.healAfterBattle} HP — now choose a card to add to your deck`;
+  $("reward-sub").textContent = `+🪙 ${goldWon} gold, healed ${CONFIG.healAfterBattle} HP — now choose a card`;
   $("reward-skip").textContent = `Skip (+${CONFIG.skipRewardHeal} HP)`;
   showScreen("screen-reward");
 }

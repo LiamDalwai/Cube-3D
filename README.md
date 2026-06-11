@@ -10,12 +10,14 @@ Open `CardWardens.html` in a browser. That's it — works on desktop and phones 
 
 To get a shareable URL you can play from any phone, enable GitHub Pages for this repo (Settings → Pages → Deploy from a branch → `main`), then play at `https://liamdalwai.github.io/Cube-3D/CardWardens.html`.
 
-**Demo content:** 3 playable Wardens, 33 cards, and two full areas in one continuous run:
+**Demo content:** 1 playable Warden (Kaela — Thorn and Zyra show as locked, coming soon), 33 cards, and two full chapters in one continuous run:
 
-1. **The Slime Meadows** — 5 zones of sunny hills and mischievous slimes (Gloop, Bloop, Zap, Blush) ending at King Gloopius on the Gel Throne
-2. **The Whispering Woods** — 4 zones of misty forest (Gloomcaps, the Bog Croaker, Thistle Imps, the Bramble Beast) ending at the Hollow King
+1. **Chapter 1: The Slime Meadows** — 5 zones of sunny hills and mischievous slimes (Gloop, Bloop, Zap, Blush) ending at King Gloopius on the Gel Throne
+2. **Chapter 2: The Whispering Woods** — 4 zones of misty forest (Gloomcaps, the Bog Croaker, Thistle Imps, the Bramble Beast) ending at the Hollow King
 
 Areas 3 and 4 (*Ember Caverns*, *Skyspire Peaks*) show on the map as coming soon — we're building them one at a time.
+
+**UI/UX:** built like a mobile card-battler — your full-body hero stands on the battlefield facing the enemies, intents appear as speech bubbles over enemies' heads, your hand fans out in an arc at the bottom, with an energy gem, draw/discard piles and a round End Turn button around it; between fights you walk a winding node path across the chapter map and collect gold.
 
 **Graphics:** every character and enemy is an original hand-drawn vector (SVG) sprite — infinitely sharp at any resolution — with per-area animated backdrops (rolling meadow hills with drifting bubbles, dark forest with blinking fireflies), idle squish/bob/float animations, attack lunges, hit sparks, floating damage numbers and dealt-card animations. Swap any sprite in the `ART` library for your own SVG, or delete one and the game falls back to that character's emoji.
 
